@@ -12,7 +12,6 @@
   },
   "author": "dreamguys technologies",
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
     "@ckeditor/ckeditor5-build-classic": "^35.1.0",
     "@ckeditor/ckeditor5-vue": "^4.0.1",
     "@mui/icons-material": "^5.10.3",
@@ -31,10 +30,8 @@
     "file-loader": "^6.2.0",
     "flot-charts": "^0.8.3",
     "jquery": "^3.6.0",
-    "jwt-decode": "^3.1.2",
     "npm-force-resolutions": "0.0.10",
     "owl.carousel": "^2.3.4",
-    "regenerator-runtime": "^0.13.11",
     "sass-loader": "^11.0.1",
     "theia-sticky-sidebar": "^1.7.0",
     "vee-validate": "^4.5.9",
@@ -61,13 +58,10 @@
     "vue3-summernote-editor": "^1.0.2",
     "vue3-tags-input": "^1.0.2",
     "vuex": "^4.0.0-beta.4",
-    "vuex-persistedstate": "^4.1.0",
     "yup": "^0.32.11"
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@babel/plugin-transform-runtime": "^7.19.6",
     "@babel/preset-env": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
     "@vue/compiler-sfc": "^3.0.0-beta.18",

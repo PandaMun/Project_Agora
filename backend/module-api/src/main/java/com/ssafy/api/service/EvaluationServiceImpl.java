@@ -1,6 +1,7 @@
 package com.ssafy.api.service;
 
 import com.ssafy.api.request.EvaluationBase;
+import com.ssafy.api.request.EvaluationDeleteReq;
 import com.ssafy.api.request.EvaluationRegisterPostReq;
 import com.ssafy.entity.rdbms.Evaluation;
 import com.ssafy.repository.DebateRepository;
@@ -9,7 +10,9 @@ import com.ssafy.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -41,13 +44,21 @@ public class EvaluationServiceImpl implements EvaluationService {
             sb.append(evaluationBase.getParentId()+", ");
             sb.append(evaluationBase.getId()+", ");
             sb.append(evaluationBase.getPoint());
-            sb.append("}, ");
+            sb.append("},\n ");
         }
         sb.append("\n]");
         return sb.toString();
     }
-//    @Override
-//    public void deleteDebate(Long debateId) {
-//
-//    }
+
+    @Override
+    @Transactional
+    public void deleteEvaluation(Long evaluationId) {
+        Evaluation evaluation = evaluationRepository.findById(evaluationId).orElseThrow(NoSuchElementException::new);
+        evaluationRepository.delete(evaluation);
+    }
+
+    @Override
+    public List<Evaluation> getEvaluationList(String userId) {
+        return evaluationRepository.findByEvaluatedId(userId);
+    }
 }

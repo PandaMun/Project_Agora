@@ -1,0 +1,9 @@
+#spring:
+#  kafka:
+#    template:
+#      default-topic: kafka-topic
+#    consumer:
+#      group-id: foo
+#      bootstrap-servers: "localhost:9092"
+#    producer:
+#      bootstrap-servers: "localhost:9092"

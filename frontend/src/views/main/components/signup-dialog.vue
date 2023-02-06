@@ -102,7 +102,7 @@ export default {
           console.log('valid-signup')
           const response = await requestSignup({user_id: state.form.user_id, password: state.form.password,
             department: state.form.department, position: state.form.position, name: state.form.name})
-          if(response.data.message === "Success") {
+          if(response.data.message == "Success") {
             console.log(response)
             alert('회원가입이 성공하였습니다.')
             handleClose();

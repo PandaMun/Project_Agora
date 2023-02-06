@@ -48,6 +48,6 @@ public class Debate extends BaseEntity {
     private LocalDateTime callEndTime;
 
     @OneToOne(mappedBy = "debate")
-    private DebaseResult debaseResult;
+    private DebateResult debateResult;
 
 }

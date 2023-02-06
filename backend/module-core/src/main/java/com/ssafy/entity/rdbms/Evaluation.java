@@ -25,7 +25,7 @@ public class Evaluation extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "evaluated_id")
     private User evaluated;
-
+    
     @Column
     private String content;
 }

@@ -6,6 +6,7 @@ import com.ssafy.api.request.UserReissuePostReq;
 import com.ssafy.api.response.UserAuthPostRes;
 import com.ssafy.common.auth.TokenInfo;
 import com.ssafy.common.util.JwtTokenUtil;
+import com.ssafy.entity.rdbms.Role;
 import com.ssafy.entity.rdbms.User;
 import com.ssafy.entity.redis.RefreshToken;
 import lombok.RequiredArgsConstructor;
@@ -38,14 +39,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(UserRegisterPostReq userRegisterInfo) {
-        User user = new User();
-        user.setUserEmail(userRegisterInfo.getEmail());
-        // 보안을 위해서 유저 패스워드 암호화 하여 디비에 저장.
-        user.setPassword(passwordEncoder.encode(userRegisterInfo.getPassword()));
-
-        user.setName(userRegisterInfo.getName());
-        user.setPosition(userRegisterInfo.getPosition());
-        user.setDepartment(userRegisterInfo.getDepartment());
+        User user = User.builder()
+                .userEmail(userRegisterInfo.getEmail())
+                // 보안을 위해서 유저 패스워드 암호화 하여 디비에 저장.
+                .password(passwordEncoder.encode(userRegisterInfo.getPassword()))
+                .name(userRegisterInfo.getName())
+                .position(userRegisterInfo.getPosition())
+                .department(userRegisterInfo.getDepartment())
+                .role(Role.ROLE_USER)
+                .build();
 
         return userRepository.save(user);
     }

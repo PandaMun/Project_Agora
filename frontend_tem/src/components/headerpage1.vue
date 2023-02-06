@@ -247,7 +247,7 @@
                         <input class="form-check-input" type="checkbox" id="night-mode">
                     </div>
                 </div>
-                <router-link class="dropdown-item" @click.native=""><i class="feather-log-out me-1"></i> Logout</router-link>
+                <router-link class="dropdown-item" to="/"><i class="feather-log-out me-1"></i> Logout</router-link>
             </div>
         </li>
     </ul>

@@ -54,15 +54,11 @@ server:
       charset: UTF-8
     contextPath: /
   address: localhost
-  port: '8081'
+  port: '8082'
   compression:
     enabled: 'true'
     mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
 spa:
   default-file: /dist/index.html
 file:
-<<<<<<< HEAD
   path: /Users/muntaeho/Desktop/SSAFY/pj2/backend/module-api/src/main/resources/static/profile
-=======
-  path: /
->>>>>>> 0b4a32035ec28919a29ccbe6da4d5f9b4346aea4

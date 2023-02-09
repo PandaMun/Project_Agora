@@ -4,6 +4,7 @@ import com.ssafy.api.request.DebateRegisterPostReq;
 import com.ssafy.api.request.VoteRegisterPostReq;
 import com.ssafy.api.response.EvaluationRes;
 import com.ssafy.api.response.VoteRes;
+import com.ssafy.api.service.UserService;
 import com.ssafy.api.service.VoteService;
 import com.ssafy.common.auth.CustomUserDetails;
 import com.ssafy.common.model.response.BaseResponseBody;
@@ -29,11 +30,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VoteController {
 
-     private final VoteService voteService;
+    private final VoteService voteService;
+
+    private final UserService userService;
+
     @PostMapping()
     @ApiOperation(value = "청중 투표 생성")
     public ResponseEntity<? extends BaseResponseBody> register(@ApiIgnore Authentication authentication,
-            @RequestBody @ApiParam(value="청중 투표 정보", required = true) VoteRegisterPostReq voteRegisterPostReq) {
+                                                               @RequestBody @ApiParam(value="청중 투표 정보", required = true) VoteRegisterPostReq voteRegisterPostReq) {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String userId = userDetails.getUsername();
@@ -58,7 +62,9 @@ public class VoteController {
         if(voteList.isEmpty())
             return ResponseEntity.status(204).body(BaseResponseBody.of(204, "Success"));
 
-        return ResponseEntity.status(200).body(VoteRes.of(voteList, debateId));
+        VoteRes voteRes = VoteRes.of(voteList, debateId);
+
+        return ResponseEntity.status(200).body(voteRes);
     }
 
 }

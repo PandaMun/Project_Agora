@@ -1,17 +1,12 @@
 <template>
-    <!-- Main Wrapper -->
     <div class="main-wrapper">
-        
         <layouts></layouts>
-       
-            <!--Dashbord Student -->
-			<div class="page-content">
+       <div class="page-content">
 				<div class="container">
 					<div class="row">
 						
 						<studentsidebar></studentsidebar>
-						
-						<!-- Profile Details -->
+
 						<div class="col-xl-9 col-md-8">	
 							<div class="settings-widget profile-details">
 								<div class="settings-menu p-0">
@@ -21,14 +16,14 @@
 									</div>
 									<div class="course-group mb-0 d-flex">
 										<div class="course-group-img d-flex align-items-center">
-											<router-link to="student-profile"><img src="../../../assets/img/user/user11.jpg" alt="" class="img-fluid"></router-link>
+											<router-link to="student-profile"><img :src="user.profileUrl" alt="" class="img-fluid"></router-link>
 											<div class="course-name">
 												<h4><router-link to="student-profile">프로필사진</router-link></h4>
 												<p>800px 이하의 png, jpg 파일이 허용됩니다.</p>
 											</div>
 										</div>
 										<div class="profile-share d-flex align-items-center justify-content-center">
-											<a href="javascript:;" class="btn btn-success">수정</a>
+											<a href="javascript:;" data-bs-toggle="modal" data-bs-target="#editProfileImg" class="btn btn-success">수정</a>
 											<a href="javascript:;" class="btn btn-danger">삭제</a>
 										</div>
 									</div>
@@ -42,69 +37,35 @@
                         <div class="col-lg-6">
                           <div class="form-group">
                             <label class="form-control-label">Email</label>
-                            <input type="text" class="form-control" placeholder="Email을 입력하세요">
+                            <input type="text" class="form-control"  v-model="user.userEmail" placeholder="Email을 입력하세요"  readonly onfocus="this.blur();">
                           </div>
                         </div>
 												<div class="col-lg-6">
 													<div class="form-group">
 														<label class="form-control-label">학교</label>
-														<input type="text" class="form-control" placeholder="학교를 입력하세요">
+														<input type="text" class="form-control" v-model="user.department" placeholder="학교를 입력하세요">
 													</div>
 												</div>
 												<div class="col-lg-6">
 													<div class="form-group">
 														<label class="form-control-label">학년</label>
-														<input type="text" class="form-control" placeholder="학년을 입력하세요">
+														<input type="text" class="form-control" v-model="user.grade" placeholder="학년을 입력하세요">
 													</div>
 												</div>
 												<div class="col-lg-6">
 													<div class="form-group">
 														<label class="form-control-label">반</label>
-														<input type="text" class="form-control" placeholder="반을 입력하세요">
+														<input type="text" class="form-control" v-model="user.classNum" placeholder="반을 입력하세요">
 													</div>
 												</div>
                         <div class="col-lg-6">
                           <div class="form-group">
                             <label class="form-control-label">직위</label>
-                            <select class="form-select" style="border: #e9ecef 1px solid" >
-                              <!-- <option selected></option> -->
-                              <option value="1">학생</option>
-                              <option value="2">선생님</option>
-                            </select>
+                            <input type="text" class="form-control" v-model="user.position" placeholder="직위" readonly onfocus="this.blur();">
                           </div>
                         </div>
-<!--												<div class="col-lg-6">-->
-<!--													<div class="form-group">-->
-<!--														<label  class="form-label">Country</label>-->
-<!--                                                        <vue-select :options="country" placeholder="Select country" name="sellist1" />-->
-<!--													</div>-->
-<!--												</div>-->
-<!--												<div class="col-lg-6">-->
-<!--													<div class="form-group">-->
-<!--														<label class="form-control-label">Address Line 1</label>-->
-<!--														<input type="text" class="form-control" placeholder="Address">-->
-<!--													</div>-->
-<!--												</div>-->
-<!--												<div class="col-lg-6">-->
-<!--													<div class="form-group">-->
-<!--														<label class="form-control-label">Address Line 2 (Optional)</label>-->
-<!--														<input type="text" class="form-control" placeholder="Address">-->
-<!--													</div>-->
-<!--												</div>-->
-<!--												<div class="col-lg-6">-->
-<!--													<div class="form-group">-->
-<!--														<label class="form-control-label">City</label>-->
-<!--														<input type="text" class="form-control" placeholder="Enter your City">-->
-<!--													</div>-->
-<!--												</div>-->
-<!--												<div class="col-lg-6">-->
-<!--													<div class="form-group">-->
-<!--														<label class="form-control-label">ZipCode</label>-->
-<!--														<input type="text" class="form-control" placeholder="Enter your Zipcode" >-->
-<!--													</div>-->
-<!--												</div>-->
 												<div class="update-profile">
-													<button type="button" class="btn btn-primary">프로필 수정</button>
+													<button type="button" class="btn btn-primary" @click = changeUserInfo>프로필 수정</button>
 												</div>
 											</div>
 										</form>
@@ -116,28 +77,70 @@
 						
 					</div>
 				</div>
-			</div>	
-			<!-- /Dashbord Student -->
-        
+			</div>
         <layouts1></layouts1>
-       
     </div>
-    <!-- /Main Wrapper -->
+  <editProfileImg></editProfileImg>
 </template>
 <script>
-    import Vue from 'vue'
+import { apiInstance } from "../../../api/index.js";
+import {findById} from "../../../api/User";
     export default {
       components: {
-        
+
       },
       data() {
             return {
-                country: ["Select country", "India", "America", "London"],
-               
+              user: {
+                userEmail: '',
+                name: '',
+                department: '',
+                grade: '',
+                classNum: '',
+                position: '',
+                profileUrl:'',
+              },
             }
         },
+      methods:{
+        async changeUserInfo() {
+          console.log(this.user)
+          if(this.user.userEmail != null && this.user.name != null && this.user.department != null
+               && this.user.grade!= null && this.user.classNum != null) {
+            const api = apiInstance();
+            api.defaults.headers["authorization"] = "Bearer " +  sessionStorage.getItem("access-token");
+            await api.patch("/users/info", this.user)
+                .then(response => {
+                  if (response.status == 200) {
+                    alert("회원정보 변경에 성공하셨습니다.");
+                  } else if (response.status == 401) {
+                    this.$router.push('/error-404')
+                  } else if (response.status == 500) {
+                    this.$router.push('/error-500')
+                  }
+                }).catch(error =>{
+                  console.log(error)
+                });
+          } else{
+            alert("빈칸을 채워주세요")
+          }
+        }
+      },
         mounted() {
-
+          findById(data =>{
+                this.user.userEmail = data.data.userEmail;
+                this.user.name = data.data.name;
+                this.user.department = data.data.department;
+                this.user.grade = data.data.grade;
+                this.user.classNum = data.data.classNum;
+                this.user.position = data.data.position;
+                this.user.profileUrl = data.data.profileUrl;
+          },
+          data =>{
+            if(data.data.statusCode == 401){
+              alert("토큰이 만료")
+            }
+          })
         }
     }
 </script>

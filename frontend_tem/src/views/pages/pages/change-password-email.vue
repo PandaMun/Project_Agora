@@ -47,9 +47,8 @@ export default {
     async changePasswordByEmail() {
       if(this.password != null && this.password == this.passwordConfirm) {
         const api = apiInstance();
-        alert(this.password)
         api.defaults.headers["authorization"] = "Bearer " + this.token;
-        await api.patch("/users/email/password", this.password)
+        await api.patch("/users/email/password", { password : this.password})
             .then(response => {
               if (response.status == 200) {
                 alert("비밀번호 변경에 성공하셨습니다.")
@@ -69,7 +68,7 @@ export default {
   },
   mounted() {
     this.token = this.$route.query.token;
-    console.log("token" +this.token)
+    console.log("token  " +this.token)
     if(this.token == null || this.token == ""){
       alert("잘못된 링크입니다.");
       this.$router.push('/')

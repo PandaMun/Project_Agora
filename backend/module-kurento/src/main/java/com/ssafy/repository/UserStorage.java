@@ -1,15 +1,15 @@
 package com.ssafy.repository;
 
-import com.ssafy.domain.UserSession;
+import com.ssafy.domain.Participant;
 
 public interface UserStorage {
-    void putByName(String name, UserSession user);
+    void putByName(String name, Participant user);
 
-    void putBySessionId(String id, UserSession user);
+    void putBySessionId(String id, Participant user);
 
-    UserSession getByName(String name);
+    Participant getByName(String name);
 
-    UserSession getBySessionId(String id);
+    Participant getBySessionId(String id);
 
     boolean containByName(String name);
 

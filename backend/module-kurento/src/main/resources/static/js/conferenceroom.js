@@ -19,6 +19,7 @@ var ws = new WebSocket('wss://' + location.host + '/groupcall');
 var participants = {};
 var name;
 var position;
+var isScreen = false;
 
 window.onbeforeunload = function () {
     ws.close();
@@ -60,6 +61,13 @@ ws.onmessage = function (message) {
             var time = parsedMessage.time;
             document.getElementById('timer').innerText = parseInt(time / 60) + ':' + time % 60
             break
+        case 'receiveSystemComment':
+            alert(parsedMessage.comment)
+            break;
+        case 'terminateDebate':
+            alert('토론이 종료되었습니다.');
+            leaveRoom();
+            break
         default:
             console.error('Unrecognized message', parsedMessage);
     }
@@ -67,25 +75,40 @@ ws.onmessage = function (message) {
 
 function register() {
     name = document.getElementById('name').value;
-    var room = document.getElementById('roomName').value;
+    let title = document.getElementById('title').value;
+    let debateId = document.getElementById('debateId').value;
     position = document.getElementById('position').value;
+    let roomType = document.getElementById('roomType').value;
+    let time = document.getElementById('time').value;
 
-    document.getElementById('room-header').innerText = 'ROOM ' + room;
+    if (this.position === '사회자') {
+        document.getElementById("buttons").style.display = '';
+    }
+
+    sendMessage({
+        id: 'createRoom',
+        debateId: debateId,
+        title: title,
+        roomType: roomType,
+        time: time
+    })
+
+    document.getElementById('room-header').innerText = title;
     document.getElementById('join').style.display = 'none';
     document.getElementById('room').style.display = 'block';
 
     var message = {
         id: 'joinRoom',
         userName: name,
-        debateId: room,
-        roomName: room,
+        debateId: debateId,
+        title: title,
         position: position,
     }
     sendMessage(message);
 }
 
 function onNewParticipant(request) {
-    receiveVideo(request.name, request.position);
+    receiveVideo(request.name, request.position, request.isScreen);
 }
 
 function receiveVideoResponse(result) {
@@ -118,10 +141,9 @@ function onExistingParticipants(msg) {
         }
     };
 
-    if (position === 'screen') {
-        name = 'screen_' + name
+    if (isScreen) {
         console.log('share screen:', name, position)
-        var participant = new Participant(name, position);
+        var participant = new Participant(name, position, true);
         participants[name] = participant;
         var video = participant.getVideoElement();
 
@@ -152,7 +174,7 @@ function onExistingParticipants(msg) {
 
     } else {
         console.log(name + " registered in room " + room);
-        var participant = new Participant(name, position);
+        var participant = new Participant(name, position, msg.isScreen);
         participants[name] = participant;
         var video = participant.getVideoElement();
 
@@ -161,50 +183,114 @@ function onExistingParticipants(msg) {
             mediaConstraints: constraints,
             onicecandidate: participant.onIceCandidate.bind(participant)
         }
-        participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
-            function (error) {
-                if (error) {
-                    return console.error(error);
-                }
-                this.generateOffer(participant.offerToReceiveVideo.bind(participant));
-            });
 
-        msg.data.forEach(m => (receiveVideo(m.name, m.position)));
+        if (position === '청중') {
+            participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
+                function (error) {
+                    if (error) {
+                        return console.error(error);
+                    }
+                    this.generateOffer(participant.offerToReceiveVideo.bind(participant));
+                });
+        } else {
+            participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
+                function (error) {
+                    if (error) {
+                        return console.error(error);
+                    }
+                    this.generateOffer(participant.offerToReceiveVideo.bind(participant));
+                });
+        }
+
+        msg.data.forEach(m => (receiveVideo(m.name, m.position, m.isScreen)));
     }
 
 }
 
 function start() {
-    var room = document.getElementById('roomName').value;
+    let debateId = document.getElementById('debateId').value;
 
     sendMessage({
         id: 'startSpeaking',
-        debateId: room
+        debateId: debateId
     });
 }
 
 function stop() {
-    var room = document.getElementById('roomName').value;
+    let debateId = document.getElementById('debateId').value;
 
     sendMessage({
         id: 'pauseSpeaking',
-        debateId: room
+        debateId: debateId
     });
 }
 
 function shareScreen() {
     name = document.getElementById('name').value;
-    var room = document.getElementById('roomName').value;
-    position = 'screen'
+    let debateId = document.getElementById('debateId').value;
+    let title = document.getElementById('title').value;
+    isScreen = true;
+
+    sendMessage({
+        id: 'leaveRoom'
+    });
+    for (var key in participants) {
+        if (participants[key].name !== name) {
+            var partVideo = document.getElementById("video-" + participants[key].name);
+            console.log('leave', participants[key].name);
+            partVideo.parentElement.remove();
+        }
+    }
+    delete participants[name];
+    document.getElementById("video-" + name).parentElement.remove();
 
     var message = {
         id: 'shareScreen',
         userName: name,
-        debateId: room,
-        roomName: room,
+        debateId: debateId,
+        title: title,
         position: position,
     }
+    // name = 'screen_' + name;
     sendMessage(message);
+    document.getElementById("button-share-on").style.display = "none";
+    document.getElementById("button-share-off").style.display = "";
+}
+
+function stopShareScreen() {
+    name = document.getElementById('name').value;
+    let debateId = document.getElementById('debateId').value;
+    let title = document.getElementById('title').value;
+    isScreen = false;
+
+    sendMessage({
+        id: 'leaveRoom'
+    });
+    for (let key in participants) {
+        if (participants[key].name !== name) {
+            let partVideo = document.getElementById("video-" + participants[key].name);
+            console.log('leave', participants[key].name);
+            partVideo.parentElement.remove();
+        }
+    }
+    delete participants[name];
+    document.getElementById(name).remove();
+    let video = document.getElementById("video-" + name);
+    video.srcObject.getTracks().forEach(track => track.stop());
+    video.remove();
+
+
+    var message = {
+        id: 'joinRoom',
+        userName: name,
+        debateId: debateId,
+        title: title,
+        position: position,
+    }
+    // name = 'screen_' + name;
+    sendMessage(message);
+    document.getElementById("button-share-on").style.display = "";
+    document.getElementById("button-share-off").style.display = "none";
 }
 
 function leaveRoom() {
@@ -222,13 +308,10 @@ function leaveRoom() {
     ws.close();
 }
 
-function receiveVideo(name, position) {
+function receiveVideo(name, position, isScreen) {
     console.log(name, position)
-    if (position === 'screen') {
-        return;
-    }
     var sender = name;
-    var participant = new Participant(sender, position);
+    var participant = new Participant(sender, position, isScreen);
     participants[sender] = participant;
     var video = participant.getVideoElement();
 
@@ -244,13 +327,13 @@ function receiveVideo(name, position) {
             }
             this.generateOffer(participant.offerToReceiveVideo.bind(participant));
         });
-    ;
 }
 
 function onParticipantLeft(request) {
     console.log('Participant ' + request.name + ' left');
     var participant = participants[request.name];
     participant.dispose();
+    document.getElementById('video-' + request.name).remove();
     delete participants[request.name];
 }
 
@@ -258,4 +341,48 @@ function sendMessage(message) {
     var jsonMessage = JSON.stringify(message);
     console.log('Sending message: ' + jsonMessage);
     ws.send(jsonMessage);
+}
+
+function videoOnOff() {
+    if (participants[name].rtcPeer.videoEnabled) {
+        // 끌때
+        participants[name].rtcPeer.videoEnabled = false;
+        document.getElementById("vidOn").style.display = "";
+        document.getElementById("vidOff").style.display = "none";
+    } else {
+        participants[name].rtcPeer.videoEnabled = true;
+        document.getElementById("vidOn").style.display = "none";
+        document.getElementById("vidOff").style.display = "";
+    }
+}
+
+function audioOnOff() {
+    if (participants[name].rtcPeer.audioEnabled) {
+        participants[name].rtcPeer.audioEnabled = false;
+        document.getElementById("audOn").style.display = "";
+        document.getElementById("audOff").style.display = "none";
+    } else {
+        participants[name].rtcPeer.audioEnabled = true;
+        document.getElementById("audOn").style.display = "none";
+        document.getElementById("audOff").style.display = "";
+    }
+}
+
+function sendSystemComment() {
+    let debateId = document.getElementById('debateId').value;
+
+    sendMessage({
+        id: 'sendSystemComment',
+        debateId: debateId,
+        comment: 'test',
+    })
+}
+
+function terminateDebate() {
+    let debateId = document.getElementById('debateId').value;
+
+    sendMessage({
+        id: 'terminateDebate',
+        debateId: debateId
+    })
 }

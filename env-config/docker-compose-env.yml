@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 services:
   zookeeper:
     image: wurstmeister/zookeeper
@@ -35,24 +35,29 @@ services:
       LC_ALL: C.UTF-8
       MYSQL_ROOT_PASSWORD: ssafy
       MYSQL_DATABASE: ssafy_web_db
+    volumes:
+      - /home/docker/agora/volume-data/mysql:/var/lib/mysql
     command:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
 
   coturn:
-    image: instrumentisto/coturn
+    image: zenosmosis/docker-coturn
     container_name: agora-coturn
     network_mode: "host"
     ports:
-      - 33478:3478
-    command:
-      --user kurento:ssafy
+      - 3478:3478
+      - 3478:3478/udp
+      - 65435-65535:65435-65535/udp
+    environment:
+      - USERNAME=kurento
+      - PASSWORD=ssafy
 
   kurento:
     image: kurento/kurento-media-server
     container_name: agora-kurento
     ports:
-      - 38888:8888
-      - 35000-35050:35000-35050/udp
+      - 8888:8888
+      - 5000-5050:5000-5050/udp
     environment:
-      KMS_TURN_URL: kurento:ssafy@172.26.13.229:33478?transport=udp
+      KMS_TURN_URL: kurento:ssafy@3.38.178.217:3478?transport=udp

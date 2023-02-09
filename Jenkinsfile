@@ -13,7 +13,6 @@ pipeline
 	stages {
 		stage('environment') {
 			when {
-				branch 'main'
 				changeset "env-config/**/*"
 			} 
 			steps {
@@ -32,35 +31,45 @@ pipeline
 			}
 			steps {
 				echo 'Build Start "${APP_API}"'
+				sh 'chmod +x backend/gradlew'
 				sh 'backend/gradlew ${APP_API}:build -x test'
 				echo 'Build End "${APP_API}"'
 			}
 		}
 		stage('build-module-chat') {
 			when {
-				branch 'main'
 				changeset "backend/module-chat/**/*"
 			}
 			steps {
 				echo 'Build Start "${APP_CHAT}"'
+				sh 'chmod +x backend/gradlew'
 				sh 'backend/gradlew ${APP_CHAT}:build -x test'
 				echo 'Build End "${APP_CHAT}"'
 			}
 		}
 		stage('build-module-kurento') {
 			when {
-				branch 'main'
 				changeset "backend/module-kurento/**/*"
 			}
 			steps {
 				echo 'Build Start "${APP_KURENTO}"'
-				sh './gradlew ${APP_KURENTO}:build -x test'
+				sh 'chmod +x backend/gradlew'
+				sh 'backend/gradlew ${APP_KURENTO}:build -x test'
 				echo 'Build End "${APP_KURENTO}"'
+			}
+		}
+		stage('build-front') {
+			when {
+				changeset "frontend_tem/**/*"
+			}
+			steps {
+				echo 'Build Start Front App'
+				sh 'docker build -t app-vue frontend_tem/.'
+				echo 'Build End Front App'
 			}
 		}
 		stage('deploy-module-api') {
 			when {
-				branch 'main'
 				anyOf {
 					changeset "backend/module-core/**/*"
 					changeset "backend/module-api/**/*"
@@ -74,7 +83,6 @@ pipeline
 		}
 		stage('deploy-module-chat') {
 			when {
-				branch 'main'
 				changeset "backend/module-chat/**/*"
 			}
 			steps {
@@ -85,13 +93,22 @@ pipeline
 		}
 		stage('deploy-module-kurento') {
 			when {
-				branch 'main'
 				changeset "backend/module-kurento/**/*"
 			}
 			steps {
 				echo 'Deploy Start "${APP_KURENTO}"'
 				sh 'docker-compose -f backend/module-kurento/docker-compose.yml up -d'
 				echo 'Deploy End "${APP_KURENTO}"'
+			}
+		}
+		stage('build-deploy-front') {
+			when {
+				changeset "frontend_tem/**/*"
+			}
+			steps {
+				echo 'Deploy Start Front App'
+				sh 'docker run -d -p 80:8083 --name front-app app-vue'
+				echo 'Deploy End Front App'
 			}
 		}
 	}

@@ -43,6 +43,7 @@ public class FileServiceImpl implements FileService {
                 .fileManager(fileManager)
                 .savedFileName(fileName)
                 .savedPath(path.toString())
+                .deleted(false)
                 .size(size)
                 .build();
 

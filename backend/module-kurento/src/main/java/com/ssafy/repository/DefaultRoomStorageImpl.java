@@ -9,17 +9,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultRoomStorageImpl extends ConcurrentHashMap<String, Room> implements RoomStorage {
 
     @Override
-    public Room get(String roomName) {
-        return super.get(roomName);
+    public Room get(String debateId) {
+        return super.get(debateId);
     }
 
     @Override
-    public void add(String roomName, Room room) {
-        this.put(roomName, room);
+    public void add(String debateId, Room room) {
+        this.put(debateId, room);
     }
 
     @Override
-    public void remove(String name) {
-        super.remove(name);
+    public void remove(String debateId) {
+        super.remove(debateId);
     }
 }

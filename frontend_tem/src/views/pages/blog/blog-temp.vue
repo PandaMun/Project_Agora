@@ -57,6 +57,14 @@
                                 <div class="ticket-btn-grp">
 									<a href="javascript:;" data-bs-toggle="modal" data-bs-target="#voteRegisterMethod">투표 생성하기</a>
 								</div>
+                                <br/>
+                                <div class="ticket-btn-grp">
+									<a href="javascript:;" data-bs-toggle="modal" data-bs-target="#voteResultMethod">투표 결과 확인하기</a>
+								</div>
+                                <br/>
+                                <div class="ticket-btn-grp">
+									<a href="javascript:;" data-bs-toggle="modal" data-bs-target="#evaluationTotalMethod">평가 확인하기</a>
+								</div>
                             </div>
                         </div>
                         <!-- /Blog Post -->
@@ -76,6 +84,8 @@
     <!-- /Main Wrapper -->
     <blogtempmodal></blogtempmodal>
     <voteregistermodal></voteregistermodal>
+    <evaluationtotalresult></evaluationtotalresult>
+    <voteresult></voteresult>
 </template>
 
 

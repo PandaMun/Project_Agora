@@ -6,9 +6,9 @@
             <div class="settings-menu p-0">
                 <div class="profile-bg">
                     <h5>Student여기에 직위</h5>
-                    <img src="../assets/img/profile-bg.jpg" alt="">
+                    <img src="../views/pages/student/문태호.jpg" alt="">
                     <div class="profile-img">
-                        <img src="../assets/img/user/user11.jpg" alt="">
+                        <img src="../views/pages/student/문태호.jpg" alt="">
                     </div>
                 </div>
                 <div class="profile-group">

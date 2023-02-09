@@ -61,6 +61,6 @@ server:
 spa:
   default-file: /dist/index.html
 file:
-  path: /Users/muntaeho/Desktop/SSAFY/pj2/backend/module-api/src/main/resources/static/profile
+  path: C:\Users\multicampus\Desktop
 common-code:
   evaluation-question-parent-id : 1

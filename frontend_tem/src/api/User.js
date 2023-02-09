@@ -10,6 +10,10 @@ function findById(success, fail) {
     api.defaults.headers["authorization"] = "Bearer " + sessionStorage.getItem("access-token");
     api.get(`/users/me`).then(success).catch(fail);
 }
+// function changeUserInfo(success, fail) {
+//     api.defaults.headers["authorization"] = "Bearer " + sessionStorage.getItem("access-token");
+//     api.patch(`/users/info`).then(success).catch(fail);
+// }
 
 function tokenRegeneration(user, success, fail) {
     api.defaults.headers["refreshToken"] = sessionStorage.getItem("refresh-token"); //axios header에 refresh-token 셋팅

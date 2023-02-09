@@ -18,6 +18,7 @@
 package com.ssafy.application.room;
 
 import com.ssafy.domain.Room;
+import com.ssafy.domain.TotalTimeLimitRoom;
 import com.ssafy.repository.RoomStorage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,34 +36,32 @@ public class RoomManager {
         log.debug("Searching for room {}", debateId);
         Room room = rooms.get(debateId);
 
-        if (room == null) {
-            log.debug("Room {} not existent. Will create now!", debateId);
-            room = new Room(room.getRoomName(), debateId, kurento.createMediaPipeline());
-            rooms.add(debateId, room);
-        }
-
         log.debug("Room {} found!", debateId);
         return room;
     }
 
-    public Room getRoom(String debateId, String roomName) {
-        log.debug("Searching for room {}", debateId);
+    public Room createRoom(String roomType, String debateId, String title, long time) {
         Room room = rooms.get(debateId);
 
-        if (room == null) {
-            log.debug("Room {} not existent. Will create now!", debateId);
-            room = new Room(roomName, debateId, kurento.createMediaPipeline());
-            rooms.add(debateId, room);
+        if (room != null) {
+            return room;
         }
 
-        log.debug("Room {} found!", debateId);
+        if (roomType.equals("시간총량제")) {
+            room = new TotalTimeLimitRoom(title, debateId, kurento.createMediaPipeline(), time);
+        } else {
+            // TODO: ceda 토론방 구현
+            room = new TotalTimeLimitRoom(title, debateId, kurento.createMediaPipeline(), time);
+        }
+
+        rooms.add(debateId, room);
         return room;
     }
 
     public void removeRoom(Room room) {
-        this.rooms.remove(room.getRoomName());
+        this.rooms.remove(room.getDebateId());
         room.close();
-        log.info("Room {} removed and closed", room.getRoomName());
+        log.info("Room {} removed and closed", room.getTitle());
     }
 
 }

@@ -1,6 +1,7 @@
 package com.ssafy.config;
 
 import com.ssafy.common.auth.JwtAuthenticationFilter;
+import com.ssafy.common.exception.handler.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,8 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private final JwtExceptionFilter jwtExceptionFilter;
+
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.cors().configurationSource(webMvcConfig.corsConfigurationSource())
@@ -37,6 +40,7 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
 ;
 
         return http.build();

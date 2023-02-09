@@ -1,10 +1,18 @@
-FROM node:16.19.0
-# ENV NODE_ENV=production
-WORKDIR /usr/src/app
-COPY ["package.json", "package-lock.json*", "./"]
-RUN npm install --legacy-peer-deps
+FROM node:16.16.0 as builder
+
+WORKDIR /app
+COPY package.json .
+
+RUN npm install --save --legacy-peer-deps
 COPY . .
-EXPOSE 3000
-# RUN chown -R node /usr/src/app
-# USER node
-CMD ["npm", "run", "serve"]
+RUN npm run build
+
+FROM nginx:alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx/nginx.conf /etc/nginx/conf.d
+
+EXPOSE 8083
+
+CMD ["nginx", "-g", "daemon off;"]

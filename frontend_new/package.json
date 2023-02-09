@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "truelysell-vuejs project",
   "private": true,
+  "homepage": ".",
   "scripts": {
     "dev": "webpack-dev-server",
     "build": "webpack --env.production",

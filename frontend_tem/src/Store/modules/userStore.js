@@ -45,9 +45,18 @@ const userStore = {
                         commit("SET_IS_VALID_TOKEN", true);
                         sessionStorage.setItem("access-token", accessToken);
                         sessionStorage.setItem("refresh-token", refreshToken);
-                        findById(accessToken.userId, ({data}) => {
+                        findById(({data}) => {
+                            let userInfo = {
+                                userEmail : data.userEmail,
+                                name : data.name,
+                                department : data.department,
+                                position : data.position,
+                                grade : data.grade,
+                                classNum : data.classNum,
+                                profile : data.profileUrl
+                            }
                             if (data.message === "Success") {
-                                commit("SET_USER_INFO", data.userInfo);
+                                commit("SET_USER_INFO", userInfo);
                                 // console.log("3. getUserInfo data >> ", data);
                             } else {
                                 console.log("유저 정보 없음!!!!");
@@ -68,26 +77,19 @@ const userStore = {
                 }
             );
         },
-        //  getUserInfo({ commit, dispatch }, token) {
-        //     let decodeToken = jwtDecode(token);
-        //     // console.log("2. getUserInfo() decodeToken :: ", decodeToken);
-        //      findById(
-        //         decodeToken.userId,
-        //         ({ data }) => {
-        //             if (data.message === "Success") {
-        //                 commit("SET_USER_INFO", data.userInfo);
-        //                 // console.log("3. getUserInfo data >> ", data);
-        //             } else {
-        //                 console.log("유저 정보 없음!!!!");
-        //             }
-        //         },
-        //         async (error) => {
-        //             console.log("getUserInfo() error code [토큰 만료되어 사용 불가능.] ::: ", error.response.status);
-        //             commit("SET_IS_VALID_TOKEN", false);
-        //             await dispatch("tokenRegeneration");
-        //         }
-        //     );
-        // },
+         getUserInfo({ commit, dispatch }) {
+             findById(({data}) => {
+                 if (data.message === "Success") {
+                     console.log(data)
+                 } else {
+                     console.log("유저 정보 없음!!!!");
+                 }
+             }, async (error) => {
+                 console.log("getUserInfo() error code [토큰 만료되어 사용 불가능.] ::: ", error.response.status);
+                 commit("SET_IS_VALID_TOKEN", false);
+                 await dispatch("tokenRegeneration");
+             });
+        },
         async tokenRegeneration({commit, state}) {
             console.log("토큰 재발급 >> 기존 토큰 정보 : {}", sessionStorage.getItem("access-token"));
             await tokenRegeneration(
@@ -152,4 +154,3 @@ const userStore = {
 };
 
 export default userStore;
-

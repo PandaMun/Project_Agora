@@ -23,7 +23,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 /**
  *
- * @author Ivan Gracia (izanmail@gmail.com)
+ * @author Ivan Gracia (izanmail@gmail.com) 
  * @since 4.3.1
  */
 @SpringBootApplication

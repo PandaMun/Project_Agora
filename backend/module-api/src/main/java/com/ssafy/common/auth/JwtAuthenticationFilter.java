@@ -7,6 +7,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,8 +37,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (headerAccessToken != null) {
             // 어세스 토큰이 유효한 상황
             String accessToken = headerAccessToken.substring(7);
-            if (jwtTokenUtil.validateToken(accessToken)) {
-                this.setAuthentication(accessToken);
+            try {
+                if (jwtTokenUtil.validateToken(accessToken)) {
+                    this.setAuthentication(accessToken);
+                }
+            }catch (ExpiredJwtException e){
+                throw new JwtException("토큰 기한이 만료");
+            }catch (IllegalArgumentException e){
+                throw new JwtException("유효하지 않은 토큰");
+            }catch (SignatureException e){
+                throw new JwtException("사용자 인증 실패");
             }
         }
         filterChain.doFilter(request, response);

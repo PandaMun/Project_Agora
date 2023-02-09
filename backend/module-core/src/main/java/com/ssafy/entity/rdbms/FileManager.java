@@ -9,7 +9,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,5 +23,9 @@ public class FileManager extends BaseEntity{
 
     @OneToMany(mappedBy = "fileManager", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files = new ArrayList<>();
+
+
+
+
 
 }

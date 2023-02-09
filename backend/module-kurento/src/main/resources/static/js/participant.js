@@ -29,7 +29,7 @@ const PARTICIPANT_CLASS = 'participant';
  *                        The tag of the new element will be 'video<name>'
  * @return
  */
-function Participant(name, position) {
+function Participant(name, position, isScreen) {
     this.name = name;
     this.position = position;
     var container = document.createElement('div');
@@ -38,26 +38,43 @@ function Participant(name, position) {
     container.id = name;
     var span = document.createElement('span');
     var video = document.createElement('video');
-    var rtcPeer;
+    video.id = 'video-' + name;
+    video.autoplay = true;
+    video.controls = false;
 
-    container.appendChild(video);
-    container.appendChild(span);
+    console.log(this)
+
+    var rtcPeer;
     // container.onclick = switchContainerClass;
     console.log(this.position)
     if (this.position === '반대') {
         document.getElementById('participants-opp').appendChild(container);
     } else if (this.position === '찬성') {
-        document.getElementById('participants').appendChild(container);
-    } else {
-        document.getElementById('screen').appendChild(video);
+        document.getElementById('participants-agree').appendChild(container);
+    } else if (this.position === '사회자') {
+        document.getElementById('moderator').appendChild(container);
     }
 
+    container.appendChild(video);
+
+    if (isScreen) {
+        let alternated = document.createElement('div');
+        alternated.innerText = '화면 공유를 진행 중입니다.'
+        alternated.style.width = '300';
+        alternated.style.height = '225';
+        alternated.style.color = 'white';
+        alternated.style.display = 'flex';
+        alternated.style.justifyContent = 'center';
+        alternated.style.alignItems = 'center';
+
+        container.appendChild(alternated)
+        document.getElementById('screen').appendChild(video);
+
+    }
+
+    container.appendChild(span);
+
     span.appendChild(document.createTextNode(name));
-
-    video.id = 'video-' + name;
-    video.autoplay = true;
-    video.controls = false;
-
 
     this.getElement = function () {
         return container;

@@ -18,7 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User extends BaseEntity {
+public class
+User extends BaseEntity {
 
     @Column(unique = true,
             name = "user_email")
@@ -65,5 +66,10 @@ public class User extends BaseEntity {
     public void createFileManager(FileManager fileManager){
         this.fileManager = fileManager;
 
+    }
+    public void update(String department, int grade, int classNum){
+        this.department = department;
+        this.grade = grade;
+        this.classNum = classNum;
     }
 }

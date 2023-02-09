@@ -23,6 +23,11 @@ module.exports = (env = {}) => ({
   module: {
     rules: [
       {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: "javascript/auto"
+      },
+      {
         test: /\.vue$/,
         use: 'vue-loader'
       },

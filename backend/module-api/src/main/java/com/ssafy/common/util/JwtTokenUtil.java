@@ -5,8 +5,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 
 import com.ssafy.common.auth.CustomUserDetailService;
 import com.ssafy.common.auth.TokenInfo;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -95,9 +98,11 @@ public class JwtTokenUtil {
 
     //토큰 유효시간 체크
     public boolean validateToken(String jwtToken) {
-        Date expiration = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
-                .build().parseClaimsJws(jwtToken)
-                .getBody().getExpiration();
+        Date expiration = new Date();
+            expiration = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                    .build().parseClaimsJws(jwtToken)
+                    .getBody().getExpiration();
+
         return expiration.after(new Date());
     }
 

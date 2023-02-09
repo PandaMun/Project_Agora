@@ -5,15 +5,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                 <h5 class="modal-title" id="addpaymentMethod">{{ this.debate_info.debate_title }} 투표 상호평가</h5>
-                <!-- <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-regular fa-circle-xmark"></i></button>     -->
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-regular fa-circle-xmark"></i></button>    
             </div>
-                <div class="modal-body-wrapper text-center" v-if="isVoteSubmitted">
-                    <h4 class="p-5"> 청중 투표를 종료합니다. </h4>
-                    <div class="modal-footer me-auto text-center">
-                        <button type="button" class="btn btn-modal-style btn-cancel" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-                <div class="modal-body-wrapper" v-else>
                     <div class="modal-body">
                         <div class="addpaymethod-form add-course-info">
                             <form action="#">
@@ -56,8 +49,8 @@
                     </div>
                     <div class="modal-footer me-auto  text-center">
                         <button type="button" class="btn btn-modal-style btn-theme" @click ="registerVote()" >Submit</button>
+                    <button type="button" class="btn btn-modal-style btn-cancel" data-bs-dismiss="modal"> 투표하기 창 닫기</button>
                     </div>
-            </div>
             </div>
         </div>
     </div>	   
@@ -109,9 +102,8 @@ export default {
     methods: {
         async registerVote() {
             const api = apiInstance();
-            // api.defaults.headers["Authorization"] = "Bearer " + sessionStorage.getItem("access-token");
-            api.defaults.headers["Authorization"] = "Bearer " +"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsaXN0ZW5AbmF2ZXIuY29tIiwiaXNzIjoiUmVzZXRDb250ZW50IiwiZXhwIjoxNjc1NzU2MjgzLCJpYXQiOjE2NzU3NTQ0ODN9.XELlqiUxtZ4kmoz12VStgr02waDPZOB2Hv3c5pgj6XxLQscwAQenyq61EyixPtkJnHebMYQVL0Md28OtTeywEw"
             
+            api.defaults.headers["Authorization"] = "Bearer " + sessionStorage.getItem("access-token");
             if(this.perspective_id == ''){ 
                 alert('찬성 의견을 선택해주세요')
                 return;

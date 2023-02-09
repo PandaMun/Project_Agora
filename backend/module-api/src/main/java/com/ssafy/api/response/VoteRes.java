@@ -1,5 +1,6 @@
 package com.ssafy.api.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.entity.rdbms.Vote;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,45 +20,62 @@ import java.util.Map;
 @ApiModel("VoteResponse")
 public class VoteRes {
     @ApiModelProperty(name="토론 Id")
+    @JsonProperty("debate_id")
     Long debateId;
 
+    @ApiModelProperty(name="토론 제목")
+    @JsonProperty("debate_title")
+    String debateTitle;
+
     @ApiModelProperty(name="mvp Id")
-    Long mvpId;
+    @JsonProperty("mvp_email")
+    String mvpEmail;
+
+    @ApiModelProperty(name="mvp 이름")
+    @JsonProperty("mvp_name")
+    String mvpName;
+
+
     @ApiModelProperty(name="청중 투표 결과 리스트")
+    @JsonProperty("perspective_list")
     List<VotePerspectiveRes> votePerspectiveResList;
 
     public static VoteRes of(List<Vote> voteList, Long debateId){
         VoteRes voteRes = new VoteRes();
         voteRes.setDebateId(debateId);
-        Map<Long, Integer> mvpCountMap = new HashMap<>();
+        voteRes.setDebateTitle(voteList.get(0).getDebate().getTitle());
+
+        Map<String, String> mvpNameMap = new HashMap<>();
+        Map<String, Integer> mvpCountMap = new HashMap<>();
         Map<String, Integer> perspectiveCountMap = new HashMap<>();
 
         for(Vote vote : voteList){
-            Long mvpId = vote.getMvpUser().getId();
+            System.out.println(vote.getMvpUser());
+            String mvpName = vote.getMvpUser().getName();
+            String mvpEmail = vote.getMvpUser().getUserEmail();
             String perspectiveName = vote.getPerspective().getName();
 
-            if(mvpCountMap.get(mvpId) == null)
-                mvpCountMap.put(mvpId, 1);
-            else
-                mvpCountMap.put(mvpId, mvpCountMap.get(mvpId) + 1);
-
+            if(mvpCountMap.get(mvpEmail) == null) {
+                mvpCountMap.put(mvpEmail, 1);
+                mvpNameMap.put(mvpEmail, mvpName);
+            }
+            else {
+                mvpCountMap.put(mvpEmail, mvpCountMap.get(mvpEmail) + 1);
+            }
             if(perspectiveCountMap.get(perspectiveName) == null)
                 perspectiveCountMap.put(perspectiveName, 1);
             else
                 perspectiveCountMap.put(perspectiveName, perspectiveCountMap.get(perspectiveName)+1);
         }
 
-        System.out.println(mvpCountMap);
 
-        Long mvpId = -1l;
         int mvpCountMax = -1;
-        for(Long id : mvpCountMap.keySet()){
-            if(mvpCountMax >= mvpCountMap.get(id)) continue;
-
-            mvpCountMax = mvpCountMap.get(id);
-            mvpId = id;
+        for(String email : mvpCountMap.keySet()){
+            if(mvpCountMax >= mvpCountMap.get(email)) continue;
+            mvpCountMax = mvpCountMap.get(email);
+            voteRes.setMvpEmail(email);
+            voteRes.setMvpName(mvpNameMap.get(email));
         }
-        voteRes.setMvpId(mvpId);
 
         int voteCount = voteList.size();
         List<VotePerspectiveRes> votePerspectiveResList = new ArrayList<>();

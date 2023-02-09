@@ -23,10 +23,17 @@ public class UserRegisterPostReq {
 	@ApiModelProperty(name="User 직위")
 	String position;
 
-	@ApiModelProperty(name="User 부서")
+	@ApiModelProperty(name="User 소속")
 	String department;
+
+	@ApiModelProperty(name="User 학년")
+	int grade;
+
+	@ApiModelProperty(name="User 반")
+	int classNum;
 
 	@ApiModelProperty(name="User 이름")
 	String name;
+
 
 }

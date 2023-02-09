@@ -3,17 +3,12 @@ import createPersistedState from "vuex-persistedstate";
 
 // import userStore from "@/Store/modules/userStore";
 import userStore from "./modules/userStore";
+import devate from './modules/devate';
 
-import evaluationStore from './modules/evaluationStore';
-import voteStore from './modules/voteStore';
 
 // [store 데이터 설정 실시]
 const store = createStore({
-    modules: {
-        userStore, 
-        evaluationStore,
-        voteStore,
-    },
+    modules: {userStore, devate},
     state: { // [변수들의 집합]
 
     },
@@ -24,7 +19,6 @@ const store = createStore({
 
     },
     actions: { // [비동기 처리를 하는 함수들]
-
     },
     plugins: [
         createPersistedState({

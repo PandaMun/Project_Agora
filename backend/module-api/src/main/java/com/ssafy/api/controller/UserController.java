@@ -8,6 +8,7 @@ import com.ssafy.common.model.response.BaseResponseBody;
 import com.ssafy.entity.rdbms.FileManager;
 import com.ssafy.entity.rdbms.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,11 +40,12 @@ public class UserController {
 	
 
 	private final UserService userService;
+
 	private final UserFileManagerService userFileManagerService;
 
 	private final MailService mailService;
-	private final FileService fileService;
-	
+
+
 	@PostMapping()
 	@ApiOperation(value = "회원 가입", notes = "<strong>아이디와 패스워드</strong>를 통해 회원가입 한다.") 
     @ApiResponses({
@@ -59,8 +61,8 @@ public class UserController {
 
 		try {
 			User user = userService.createUser(registerInfo);
-		}catch (Exception e) {
-			return ResponseEntity.status(500).body(BaseResponseBody.of(500,"회원가입에 실패하셨습니다."));
+		}catch (DuplicateKeyException e) {
+			return ResponseEntity.status(500).body(BaseResponseBody.of(500,e.getMessage()));
 		}
 		return ResponseEntity.status(201).body(BaseResponseBody.of(201, "Success"));
 	}
@@ -81,8 +83,12 @@ public class UserController {
 		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userId = userDetails.getUsername();
 		User user = userService.getUserByUserEmail(userId);
-
-		return ResponseEntity.status(200).body(UserRes.of(user));
+		UserRes userRes = new UserRes().of(user);
+		if(user.getFileManager() != null) {
+			userRes.setProfileUrl((userFileManagerService.getProfileUrl(user.getFileManager())).getSavedPath());
+		}
+		System.out.println(userRes.getProfileUrl());
+		return ResponseEntity.status(200).body(userRes);
 	}
 
 	@GetMapping("/{userId}")
@@ -122,7 +128,7 @@ public class UserController {
 		}catch (Exception e){
 			return ResponseEntity.status(500).body(BaseResponseBody.of(500,"서버에 문제가 발생했습니다."));
 		}
-		return ResponseEntity.status(409).body(BaseResponseBody.of(200,"Success"));
+		return ResponseEntity.status(200).body(BaseResponseBody.of(200,"Success"));
 	}
 
 	@PatchMapping("/profile")
@@ -137,8 +143,8 @@ public class UserController {
 
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		try {
-			Long fileManagerId = userFileManagerService.getFileManager(userDetails.getUsername());
-			fileService.saveFile(file, fileManagerId);
+			FileManager fileManager = userFileManagerService.getFileManager(userDetails.getUsername());
+			userFileManagerService.saveFile(file, fileManager);
 		} catch (NoSuchElementException e) {
 			return ResponseEntity.status(401).body(BaseResponseBody.of(401,"인증에 실패하셨습니다."));
 		}catch (IOException e){
@@ -180,14 +186,14 @@ public class UserController {
 			@ApiResponse(code = 500, message = "서버 오류")
 	})
 	public ResponseEntity<?> modifyUserPasswordByEmail(@ApiIgnore Authentication authentication,
-													   @RequestBody String password) {
+													   @RequestBody EmailAuthPasswordReq emailAuthPasswordReq) {
 
-		if(password == null) {
+		if(emailAuthPasswordReq.getPassword() == null) {
 			return ResponseEntity.status(404).body(BaseResponseBody.of(401,"비밀번호가 올바르지 않습니다."));
 		}
 		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 		try{
-			userService.modifyUserPasswordByEmail(userDetails.getUsername(), password);
+			userService.modifyUserPasswordByEmail(userDetails.getUsername(), emailAuthPasswordReq.getPassword());
 		}catch (NoSuchElementException e){
 			return ResponseEntity.status(404).body(BaseResponseBody.of(404,"사용자가 존재하지 않습니다."));
 		}catch (Exception e) {

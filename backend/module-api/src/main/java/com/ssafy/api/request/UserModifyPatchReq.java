@@ -16,7 +16,7 @@ public class UserModifyPatchReq {
     @ApiModelProperty(name="유저 이름", example="임하림")
     String name;
 
-    @ApiModelProperty(name="유저 부서", example="기술개발팀")
+    @ApiModelProperty(name="유저 학교", example="기술개발팀")
     String department;
 
     @ApiModelProperty(name="유저 학년", example="임하림")

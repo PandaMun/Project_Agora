@@ -14,39 +14,42 @@
                                 <div class="col-lg-12">
                                 
                                     <!-- Deposit Method -->
-                                    <div class="radio-with-img">
-                                        <p class="radio-deposit-item" v-for= "(member, index) in debate_info.pannel[0].memberList" :key="index">
-                                            <input type="radio" name="evaluated_id" :id="'deposit-type-'+index" :value="member.user_email" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false" v-model="evaluated_id">
-                                            <label :for="'deposit-type-'+index">
-                                              <img src="../../../assets/img/profile-01.jpg" alt="" class="img-fluid" >
-                                              {{ member.user_name }}
-                                            </label>
-                                        </p>
+                                    <div class="radio-with-img p-2">
+                                        <h4> 평가 대상  </h4>
+                                        <div class = "radio-wrapper text-center">
+                                            <p class="radio-deposit-item" v-for= "(member, index) in debate_info.pannel[0].memberList" :key="index" :id = "'evaluated_user_email_'+member.user_email">
+                                                <input type="radio" name="evaluated_id" :id="'deposit-type-'+index" :value="member.user_email" class="ng-valid ng-dirty ng-touched ng-empty" aria-invalid="false" v-model="evaluated_id">
+                                                <label :for="'deposit-type-'+index">
+                                                <img src="../../../assets/img/profile-01.jpg" alt="" class="img-fluid" >
+                                                {{ member.user_name }}
+                                                </label>
+                                            </p>
+                                        </div>
                                     </div>
                                     <!-- /Deposit Method -->
                                     
-                                    <div class="form-group mb-0">
-                                        <input type="hidden" name = "debate_id" :value="this.debate_info.debate_id">
+                                    <div class="form-group mb-0" v-for=" member in debate_info.pannel[0].memberList">
                                         
-                                        <div class="from-group col-md-10" v-for="division1 in questions.children">
-                                            <!-- UI 통일성을 위해 setting-edit-profile에서 가져옴 -->
+                                        <div class="from-group" v-for="division1 in questions.children" v-show ="evaluated_id == member.user_email">
                                             <div>
                                                 <h4>{{ division1.codeName }}</h4>
                                                 <div class="from-group" v-for="division2 in division1.children">
                                                     <label class="form-control-label" >{{ division2.codeName }}</label>
                                                     <div class="from-group row" v-for="division3 in division2.children">
-                                                        <input type="hidden" name = "parent_id" :value="division2.id" >
-                                                        <input type="hidden" name = "id" :value="division3.id">
+                                                        <input type="hidden" :name = "'parent_id_'+member.user_email" :value="division2.id" >
+                                                        <input type="hidden" :name = "'id_'+member.user_email" :value="division3.id">
                                                         <label class="col-10 form-control-label" >{{ division3.codeName }}</label>
                                                         <div class="col col-item">
-                                                            <vue-select :options="point" placeholder="Choose" name = "point"/>
+                                                            <vue-select :options="point" placeholder="Choose" :name = "'point_'+member.user_email"/>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <hr>
-
                                         </div>
+                                    </div>
+                                    <div class = "text-center" v-if="evaluated_id==''">
+                                        <h2> 평가 대상을 선택해주세요 </h2>
                                     </div>
                                 </div>
                             </div>
@@ -136,9 +139,13 @@ export default {
             // formData 보내는 방법(그대로, serialize, stringify 등)이 안통함. 기존의 객체 양식과 전송시 형태가 다름. 아래는 임시 방편.
             form.debate_id = this.debate_info.debate_id;
             form.evaluated_id = this.evaluated_id;
-            let parent_id_list = formData.getAll('parent_id');
-            let id_list = formData.getAll('id');
-            let point_list = formData.getAll('point');
+            let parent_id_list = formData.getAll('parent_id_'+this.evaluated_id);
+            let id_list = formData.getAll('id_'+this.evaluated_id);
+            let point_list = formData.getAll('point_'+this.evaluated_id);
+            console.log(parent_id_list);
+            console.log(id_list);
+            console.log(point_list);
+
             if(this.evaluated_id == ''){
                 alert('평가 대상을 선택해주세요');
                 return;
@@ -157,15 +164,16 @@ export default {
 
 
             api.defaults.headers["Authorization"] = "Bearer " + sessionStorage.getItem("access-token");
-            console.log(sessionStorage.getItem("access-token"));
-
             await api.post(`/evaluations`, form)
             .then((response) => {
                 console.log(response);
                 alert("유저 평가 생성 완료");
                 // $('input[name="evaluated_id"]:checked').prop('checked', false); // 전송이끝나면 평가가 끝난 대상을 비활성화 시킨다.
                 // $('input[name="evaluated_id"]:checked').removeAttr("checked");  // 전송이 끝나면 자동으로 unchecked가 된다.
-                $('input[name="evaluated_id"]:checked').prop('disabled', true); // 라디오 버튼 비활성화
+                // $('input[name="evaluated_id"]:checked').prop('disabled', true); // 라디오 버튼 비활성화
+                // $('input[name="evaluated_id"]:checked').css('display', 'none'); // 라디오 버튼 안보이기
+                document.getElementById('evaluated_user_email_'+this.evaluated_id).style.display = 'none'; // p태그 통째로 지워버리기 된당!!
+                
                 this.evaluated_id = '';
             })
             .catch((error)=>{

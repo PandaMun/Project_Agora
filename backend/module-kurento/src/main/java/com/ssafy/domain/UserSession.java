@@ -45,6 +45,7 @@ public class UserSession implements Closeable {
 
     private final String roomName;
     private final String position;
+    private boolean screen;
     private final WebRtcEndpoint outgoingMedia;
     private final ConcurrentMap<String, WebRtcEndpoint> incomingMedia = new ConcurrentHashMap<>();
 
@@ -55,6 +56,7 @@ public class UserSession implements Closeable {
         this.session = session;
         this.roomName = roomName;
         this.position = position;
+        this.screen = false;
         this.outgoingMedia = new WebRtcEndpoint.Builder(pipeline).build();
 
         this.outgoingMedia.addIceCandidateFoundListener(event -> {
@@ -245,5 +247,13 @@ public class UserSession implements Closeable {
         result = 31 * result + name.hashCode();
         result = 31 * result + roomName.hashCode();
         return result;
+    }
+
+    public boolean isScreen() {
+        return this.screen;
+    }
+
+    public void turnOnScreen() {
+        this.screen = true;
     }
 }

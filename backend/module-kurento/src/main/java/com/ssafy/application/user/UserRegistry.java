@@ -17,12 +17,10 @@
 
 package com.ssafy.application.user;
 
-import com.ssafy.domain.UserSession;
+import com.ssafy.domain.Participant;
 import com.ssafy.repository.UserStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.socket.WebSocketSession;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Map of users registered in the system. This class has a concurrent hash map to store users, using
@@ -38,16 +36,16 @@ public class UserRegistry {
 
     private final UserStorage userStorage;
 
-    public void register(UserSession user) {
+    public void register(Participant user) {
         userStorage.putByName(user.getName(), user);
         userStorage.putBySessionId(user.getSession().getId(), user);
     }
 
-    public UserSession getByName(String name) {
+    public Participant getByName(String name) {
         return userStorage.getByName(name);
     }
 
-    public UserSession getBySession(WebSocketSession session) {
+    public Participant getBySession(WebSocketSession session) {
         return userStorage.getBySessionId(session.getId());
     }
 
@@ -55,8 +53,8 @@ public class UserRegistry {
         return userStorage.containByName(name);
     }
 
-    public UserSession removeBySession(WebSocketSession session) {
-        final UserSession user = getBySession(session);
+    public Participant removeBySession(WebSocketSession session) {
+        final Participant user = getBySession(session);
         userStorage.removeByName(user.getName());
         userStorage.removeBySessionId(session.getId());
         return user;

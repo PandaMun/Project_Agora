@@ -1,6 +1,6 @@
 package com.ssafy.repository;
 
-import com.ssafy.domain.UserSession;
+import com.ssafy.domain.Participant;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -9,26 +9,26 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class DefaultUserStorageImpl implements UserStorage {
 
-    private final Map<String, UserSession> usersByName = new ConcurrentHashMap<>();
-    private final Map<String, UserSession> usersBySessionId = new ConcurrentHashMap<>();
+    private final Map<String, Participant> usersByName = new ConcurrentHashMap<>();
+    private final Map<String, Participant> usersBySessionId = new ConcurrentHashMap<>();
 
     @Override
-    public void putByName(String name, UserSession user) {
+    public void putByName(String name, Participant user) {
         this.usersByName.put(name, user);
     }
 
     @Override
-    public void putBySessionId(String id, UserSession user) {
+    public void putBySessionId(String id, Participant user) {
         this.usersBySessionId.put(id, user);
     }
 
     @Override
-    public UserSession getByName(String name) {
+    public Participant getByName(String name) {
         return this.usersByName.get(name);
     }
 
     @Override
-    public UserSession getBySessionId(String id) {
+    public Participant getBySessionId(String id) {
         return this.usersBySessionId.get(id);
     }
 

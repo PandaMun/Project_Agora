@@ -1,7 +1,6 @@
 package com.ssafy.repository;
 
 import com.ssafy.domain.Room;
-import org.springframework.stereotype.Repository;
 
 public interface RoomStorage {
 

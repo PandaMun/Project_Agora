@@ -19,7 +19,11 @@
 body {
 	font: 13px/20px "Lucida Grande", Tahoma, Verdana, sans-serif;
 	color: #404040;
-	background: #0ca3d2;
+	background-image: url("./images/background.png");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	min-height: 1000px;
 }
 
 input[type=checkbox], input[type=radio] {
@@ -227,11 +231,11 @@ input[type=button]:active, input[type=submit]:active {
 }
 
 #screen {
-	height: 200px;
-	width: 500px;
+	height: 50%;
+	width: 100%;
 }
 
-#screen > . {
+#screen > video {
 	height: 100%;
 	width: 100%;
 }
@@ -260,20 +264,30 @@ input[type=button]:active, input[type=submit]:active {
 /*	bottom: 10px;*/
 /*}*/
 
-#participants > .participant {
-	background: royalblue;
+#participants {
+	float: left;
+}
+
+#participants-agree > .participant {
+	float: left;
+	background: #392C7D;
 }
 
 #participants-opp > .participant {
-	background: lightcoral;
+	float: right;
+	background: #FF4667;
+}
+
+#moderator > .participant {
+	float: left;
+	background: mediumpurple;
 }
 
 .participant {
 	border-radius: 4px;
 	/* border: 2px groove; */
-	margin-left: 5;
-	margin-right: 5;
-	width: 250;
+	margin: 5;
+	width: 300;
 	text-align: center;
 	overflow: hide;
 	float: left;
@@ -292,7 +306,6 @@ input[type=button]:active, input[type=submit]:active {
 
 .participant:before {
 	content: '';
-	position: absolute;
 	top: -8px;
 	right: -8px;
 	bottom: -8px;
@@ -311,9 +324,10 @@ input[type=button]:active, input[type=submit]:active {
 
 .participant video, .participant.main video {
 	width: 100%; ! important;
-	height: auto;
-	!
-	important;
+	height: auto; !important;
+	transform: rotateY(180deg);
+	-webkit-transform: rotateY(180deg);
+	-moz-transform: rotateY(180deg);
 }
 
 .participant span {

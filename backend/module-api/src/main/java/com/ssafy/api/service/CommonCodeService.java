@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface CommonCodeService {
     CommonCode getQuestionList();
+
+    List<CommonCode> getCategoryList();
 }

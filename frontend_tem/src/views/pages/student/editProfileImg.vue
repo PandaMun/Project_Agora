@@ -27,6 +27,7 @@
 <script>
 import { apiInstance } from "../../../api/index.js";
 import {findById} from "../../../api/User";
+import axios from "axios";
 
 export default {
 
@@ -53,12 +54,19 @@ export default {
   methods:{
     async uploadImage(event) {
       try {
-        const api = apiInstance();
+        const api = axios.create({
+          // baseURL: process.env.VUE_APP_API_BASE_URL,
+          // baseURL: "http://localhost:8082/api/v1",
+          baseURL: "http://i8c205.p.ssafy.io:8082/api/v1",
+          headers: {
+          }
+        });
+
         api.defaults.headers["authorization"] = "Bearer " +  sessionStorage.getItem("access-token");
         const file = event.target.files[0];
         const formData = new FormData();
         formData.append('file', file);
-        const response = await axios.post('https://api.example.com/image-upload', formData);
+        const response = await api.patch('/users/profile', formData);
         this.form.profilePicture = response.data.imageUrl;
       } catch (error) {
         console.error(error)

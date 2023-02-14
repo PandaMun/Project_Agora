@@ -7,12 +7,21 @@ const userStore = {
     state: {
         isLogin: false,
         isLoginError: false,
-        userInfo: null,
+        // userInfo : null,
+        // TODO : 임시 데이터 삭제
+        userInfo: {
+            // 
+            name : "김임시",
+            position : "임시고등학교"
+        },
         isValidToken: false,
     },
     getters: {
         checkUserInfo: function (state) {
             return state.userInfo;
+        },
+        getIsLogin: function (state) {
+            return state.isLogin;
         },
         checkToken: function (state) {
             return state.isValidToken;
@@ -20,6 +29,7 @@ const userStore = {
     },
     mutations: {
         SET_IS_LOGIN: (state, isLogin) => {
+            console.log("check  " + isLogin);
             state.isLogin = isLogin;
         },
         SET_IS_LOGIN_ERROR: (state, isLoginError) => {
@@ -29,13 +39,12 @@ const userStore = {
             state.isValidToken = isValidToken;
         },
         SET_USER_INFO: (state, userInfo) => {
-            state.isLogin = true;
             state.userInfo = userInfo;
         },
     },
     actions: {
-        userConfirm({commit, dispatch}, user) {
-            login(user, ({data}) => {
+         async userConfirm({commit, dispatch}, user) {
+             await login(user, async ({data}) => {
                     if (data.message === "Success") {
                         let accessToken = data["tokenInfo"].authorization;
                         let refreshToken = data["tokenInfo"].refreshToken;
@@ -45,15 +54,15 @@ const userStore = {
                         commit("SET_IS_VALID_TOKEN", true);
                         sessionStorage.setItem("access-token", accessToken);
                         sessionStorage.setItem("refresh-token", refreshToken);
-                        findById(({data}) => {
+                        await findById(({data}) => {
                             let userInfo = {
-                                userEmail : data.userEmail,
-                                name : data.name,
-                                department : data.department,
-                                position : data.position,
-                                grade : data.grade,
-                                classNum : data.classNum,
-                                profile : data.profileUrl
+                                userEmail: data.userEmail,
+                                name: data.name,
+                                department: data.department,
+                                position: data.position,
+                                grade: data.grade,
+                                classNum: data.classNum,
+                                profile: data.profileUrl
                             }
                             if (data.message === "Success") {
                                 commit("SET_USER_INFO", userInfo);
@@ -73,27 +82,28 @@ const userStore = {
                     }
                 },
                 (error) => {
-                    console.log(error);
+                    if(error.response.status==500){
+                        alert("존재하지 않은 아이디 입니다.")
+                    }
                 }
-            );
+            )
         },
-         getUserInfo({ commit, dispatch }) {
-             findById(({data}) => {
-                 if (data.message === "Success") {
-                     console.log(data)
-                 } else {
-                     console.log("유저 정보 없음!!!!");
-                 }
-             }, async (error) => {
-                 console.log("getUserInfo() error code [토큰 만료되어 사용 불가능.] ::: ", error.response.status);
-                 commit("SET_IS_VALID_TOKEN", false);
-                 await dispatch("tokenRegeneration");
-             });
+        getUserInfo({commit, dispatch}) {
+            findById(({data}) => {
+                if (data.message === "Success") {
+                    console.log(data)
+                } else {
+                    console.log("유저 정보 없음!!!!");
+                }
+            }, async (error) => {
+                console.log("getUserInfo() error code [토큰 만료되어 사용 불가능.] ::: ", error.response.status);
+                commit("SET_IS_VALID_TOKEN", false);
+                await dispatch("tokenRegeneration");
+            });
         },
         async tokenRegeneration({commit, state}) {
             console.log("토큰 재발급 >> 기존 토큰 정보 : {}", sessionStorage.getItem("access-token"));
             await tokenRegeneration(
-                JSON.stringify(state.userInfo),
                 ({data}) => {
                     if (data.message === "Success") {
                         let accessToken = data["access-token"];
@@ -108,7 +118,6 @@ const userStore = {
                         console.log("갱신 실패");
                         // 다시 로그인 전 DB에 저장된 RefreshToken 제거.
                         await logout(
-                            state.userInfo.userid,
                             ({data}) => {
                                 if (data.message === "Success") {
                                     console.log("리프레시 토큰 제거 성공");
@@ -133,9 +142,8 @@ const userStore = {
         },
 
 
-        async userLogout({commit}, userid) {
+        async userLogout({commit}) {
             await logout(
-                userid,
                 ({data}) => {
                     if (data.message === "Success") {
                         commit("SET_IS_LOGIN", false);

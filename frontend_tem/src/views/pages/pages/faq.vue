@@ -43,7 +43,7 @@
             <div class="col-md-12">
               <ul class="pagination lms-page">
                 <li v-for="index in totalPages" class="page-item first-page active">
-                  <a class="page-link" @click="fetchData(index,10)">{{index}}</a>
+                  <button class="page-link" @click="fetchData(index,10)">{{index}}</button>
                 </li>
 
               </ul>
@@ -79,12 +79,12 @@ export default {
   },
   computed: {
 
-    canPrev() {
-      return this.page.number > 0;
-    },
-    canNext() {
-      return this.page.number < this.page.totalPages - 1;
-    }
+    // canPrev() {
+    //   return this.page.number > 0;
+    // },
+    // canNext() {
+    //   return this.page.number < this.page.totalPages - 1;
+    // }
   },
   methods: {
     prevPage() {

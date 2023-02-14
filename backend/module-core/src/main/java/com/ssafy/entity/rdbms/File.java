@@ -37,6 +37,9 @@ public class File extends BaseEntity{
     @Column
     private String source;
 
+    @Column
+    private String userEmail;
+
     public void updateDeleted(){
         this.deleted = true;
     }

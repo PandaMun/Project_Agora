@@ -5,26 +5,34 @@ services:
     container_name: agora-zookeeper
     ports:
       - "2181:2181"
+    networks:
+      - agora_network
 
   kafka:
-    image: wurstmeister/kafka:2.12-2.5.0
+    image: wurstmeister/kafka:2.12-2.0.1
     container_name: agora-kafka
-    ports:
-      - "9092:9092"
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
-      KAFKA_ADVERTISED_PORT: 9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://i8c205.p.ssafy.io:9092
+      KAFKA_ADVERTISED_HOST_NAME: i8c205.p.ssafy.io
+      KAFKA_ADVERTISED_PORT: 9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CREATE_TOPICS: "kafka-chat:1:1"
+      KAFKA_CREATE_TOPICS: "kafka-chat:1:1"   # Topic명:Partition개수:Replica개수
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - agora_network
 
   redis:
     image: redis
     container_name: agora-redis
     ports:
       - "6379:6379"
+    networks:
+      - agora_network
 
   mysql:
     image: mysql
@@ -40,6 +48,8 @@ services:
     command:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
+    networks:
+      - agora_network
 
   coturn:
     image: zenosmosis/docker-coturn
@@ -61,3 +71,7 @@ services:
       - 5000-5050:5000-5050/udp
     environment:
       KMS_TURN_URL: kurento:ssafy@3.38.178.217:3478?transport=udp
+
+networks:
+  agora_network:
+    driver: bridge

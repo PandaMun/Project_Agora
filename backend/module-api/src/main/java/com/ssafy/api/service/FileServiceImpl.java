@@ -23,25 +23,57 @@ import java.util.*;
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
 
+    private final FileRepository fileRepository;
+
     private final FileManagerRepository fileManagerRepository;
 
     @Value("${file.path}")
     private String filePath;
 
     @Override
-    public void saveFile(MultipartFile file, Long fileManagerId) throws IOException {
+    @Transactional
+    public File saveDebateThumbnail(MultipartFile file, FileManager fileManager, String ownerEmail) throws IOException {
 
-        FileManager fileManager = fileManagerRepository.findById(fileManagerId).orElseThrow(() -> new IllegalArgumentException("fileManager가 존재하지 않습니다."));
+        if (fileManager.getFiles().size() >= 1) {
+            fileRepository.updateThumbnailState(fileManager.getId());
+        }
 
         String fileName = UUID.randomUUID().toString();
+        String saveFileName = fileName + "_thumbnail";
         Path path = Paths.get(filePath + java.io.File.separator + fileName);
         long size = file.getSize();
+
+        File savedFile = saveFile(saveFileName, path, size,ownerEmail, file, fileManager);
+
+        fileManager.getFiles().add(savedFile);
+        fileManagerRepository.save(fileManager);
+
+        return savedFile;
+    }
+
+    @Override
+    @Transactional
+    public File saveDebateFile(MultipartFile file, FileManager fileManager, String role, String ownerEmail) throws IOException {
+        String fileName = UUID.randomUUID().toString();
+        String saveFileName = fileName + "_" + role;
+        Path path = Paths.get(filePath + java.io.File.separator + fileName);
+        long size = file.getSize();
+
+        File savedFile = saveFile(saveFileName, path, size,ownerEmail, file, fileManager);
+
+        fileManager.getFiles().add(savedFile);
+        fileManagerRepository.save(fileManager);
+        return savedFile;
+    }
+
+    private File saveFile(String saveFileName, Path path, long size, String ownerEmail, MultipartFile file, FileManager fileManager) throws IOException {
 
         File newFile = File.builder()
                 .originFileName(file.getOriginalFilename().substring(0, file.getOriginalFilename().lastIndexOf(".")))
                 .extension(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")))
                 .fileManager(fileManager)
-                .savedFileName(fileName)
+                .userEmail(ownerEmail)
+                .savedFileName(saveFileName)
                 .savedPath(path.toString())
                 .deleted(false)
                 .size(size)
@@ -49,7 +81,8 @@ public class FileServiceImpl implements FileService {
 
         file.transferTo(path);
 
-        fileManager.getFiles().add(newFile);
-        fileManagerRepository.save(fileManager);
+        return newFile;
     }
+
+
 }

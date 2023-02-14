@@ -2,8 +2,8 @@ import { apiInstance } from "./index.js";
 
 const api = apiInstance();
 
-function login(user, success, fail) {
-    api.post(`/auth/login`, user).then(success).catch(fail);
+async function login(user, success, fail) {
+    await api.post(`/auth/login`, user).then(success).catch(fail);
 }
 
 function findById(success, fail) {
@@ -15,13 +15,17 @@ function findById(success, fail) {
 //     api.patch(`/users/info`).then(success).catch(fail);
 // }
 
-function tokenRegeneration(user, success, fail) {
-    api.defaults.headers["refreshToken"] = sessionStorage.getItem("refresh-token"); //axios header에 refresh-token 셋팅
-    api.post(`/auth/reissue`, user).then(success).catch(fail);
+function tokenRegeneration(success, fail) {
+    const jwt = {
+        authorization : sessionStorage.getItem('access-token'),
+        refreshToken : sessionStorage.getItem('refresh-token')
+    }
+    api.post(`/auth/reissue`, jwt).then(success).catch(fail);
 }
 
 
-function logout(userid, success, fail) {
+function logout(success, fail) {
+    api.defaults.headers["authorization"] = "Bearer " + sessionStorage.getItem("access-token");
     api.get(`/auth/auth`).then(success).catch(fail);
 }
 

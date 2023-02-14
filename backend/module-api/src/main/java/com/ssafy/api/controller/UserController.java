@@ -63,6 +63,8 @@ public class UserController {
 			User user = userService.createUser(registerInfo);
 		}catch (DuplicateKeyException e) {
 			return ResponseEntity.status(500).body(BaseResponseBody.of(500,e.getMessage()));
+		}catch (Exception e){
+			return ResponseEntity.status(500).body(BaseResponseBody.of(500,e.getMessage()));
 		}
 		return ResponseEntity.status(201).body(BaseResponseBody.of(201, "Success"));
 	}

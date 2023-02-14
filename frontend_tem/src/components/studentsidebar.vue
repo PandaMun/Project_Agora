@@ -17,7 +17,7 @@
                         <p>직위</p>
                     </div>
                     <div class="go-dashboard text-center">
-                        <router-link to="deposit-student-dashboard" class="btn btn-primary">내 정보 보기</router-link>
+                          <router-link to="deposit-student-dashboard" class="btn btn-primary">내 정보 보기</router-link>
                     </div>
                 </div>
             </div>

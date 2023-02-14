@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface FileService{
-    void saveFile(MultipartFile file, Long fileManagerId) throws IOException;
+    File saveDebateThumbnail(MultipartFile file, FileManager fileManager, String ownerEmail) throws IOException;
 
+    File saveDebateFile(MultipartFile file, FileManager fileManager, String role, String ownerEmail) throws IOException;
 }

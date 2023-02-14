@@ -3,7 +3,15 @@
         <li v-bind:class="{'active': currentPath == 'index' || currentPath == 'index'}">
             <router-link to="/">홈</router-link>
         </li>
-        <li class="has-submenu" :class=" InstructorMenu ? 'active' : 'notactive'">
+
+      <li v-bind:class="{'active': currentPath == 'debate' || currentPath == 'debate'}">
+        <router-link to="/debate">토론입장</router-link>
+      </li>
+
+
+
+
+      <li class="has-submenu" :class=" InstructorMenu ? 'active' : 'notactive'">
             <a href="javascript:void(0);">토론 <i class="fas fa-chevron-down"></i></a>
             <ul class="submenu">
                 <li :class="currentPath == 'instructor-dashboard' || currentPath == 'dashboard-instructor' ? 'active' : 'notactive'"><router-link to="instructor-dashboard">Dashboard</router-link></li>

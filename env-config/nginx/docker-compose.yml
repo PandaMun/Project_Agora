@@ -1,0 +1,11 @@
+# version: '2.1'
+# services:
+#   nginx:
+#     container_name: nginx-test
+#     image: "nginx:latest"
+#     ports:
+#      - "80:80"
+#      - "443:443"
+#     restart: always
+#     volumes: 
+#      - /etc/letsencrypt:/etc/letsencrypt #letsencrypt폴더 위치

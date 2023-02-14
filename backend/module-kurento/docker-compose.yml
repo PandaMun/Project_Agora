@@ -2,9 +2,9 @@ version: '2'
 services:
   back-module-kurento:
     build:
-      context: ./backend/module-kurento/
+      context: .
     container_name: agora-back-module-kurento
     ports:
-      - "8083:8443"
+      - "8086:8086"
     environment:
       JAVA_OPTS: -Dkms.url=ws://i8c205.p.ssafy.io:8888/kurento

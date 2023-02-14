@@ -2,6 +2,7 @@ package com.ssafy.api.service;
 
 import com.ssafy.api.request.UserModifyPasswordReq;
 import com.ssafy.api.request.UserModifyPatchReq;
+import com.ssafy.api.request.UserRegisterPostReq;
 import com.ssafy.api.request.UserReissuePostReq;
 import com.ssafy.api.response.UserAuthPostRes;
 import com.ssafy.common.auth.TokenInfo;
@@ -9,16 +10,14 @@ import com.ssafy.common.util.JwtTokenUtil;
 import com.ssafy.entity.rdbms.Role;
 import com.ssafy.entity.rdbms.User;
 import com.ssafy.entity.redis.RefreshToken;
+import com.ssafy.repository.RedisRepository;
+import com.ssafy.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.ssafy.api.request.UserRegisterPostReq;
-import com.ssafy.repository.RedisRepository;
-import com.ssafy.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.util.NoSuchElementException;
@@ -67,7 +66,7 @@ public class UserServiceImpl implements UserService {
 
         TokenInfo tokenInfo = jwtTokenUtil.generateToken(user.getUserEmail(), accessToken, refreshToken);
 
-        //redis에 저장
+        // redis에 저장
         redisRepository.save(new RefreshToken(user.getUserEmail(), refreshToken, tokenInfo.getRefreshTokenExpirationTime()));
 
         return tokenInfo;
@@ -78,7 +77,7 @@ public class UserServiceImpl implements UserService {
         if(!jwtTokenUtil.validateToken(userReissuePostReq.getRefreshToken())){
             return ResponseEntity.status(401).body(UserAuthPostRes.of(401, "Refresh Token 정보가 유효하지 않습니다.",null));
         }
-        Authentication authentication = jwtTokenUtil.getAuthentication(userReissuePostReq.getAccessToken().substring(7));
+        Authentication authentication = jwtTokenUtil.getAuthentication(userReissuePostReq.getRefreshToken());
         if(!redisRepository.findById(authentication.getName()).get().getRefreshToken().equals(userReissuePostReq.getRefreshToken())){
             return ResponseEntity.status(404).body(UserAuthPostRes.of(404, "RefreshToken 정보가 잘못되었습니다..",null));
         }

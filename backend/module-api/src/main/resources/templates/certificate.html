@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title> 토론 활동 증명서 </title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta charset='UTF-8'/>
+    <meta content='Content-type: text/html; charset=UTF-8' name='http-equiv'/>
+    <meta content='IE=Edge,chrome=1' http-equiv='X-UA-Compatible'/>
+    <meta content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no'
+          name='viewport'/>
+    <style>
+        body {
+            color: #555;
+            padding: 50px;
+            font-family: "NanumBarunGothic";
+        }
+
+        .logo-image {
+            width: 40%;
+            max-width: 300px;
+            float: right;
+        }
+
+        .main h1 {
+            width: 100%;
+            font-size: 40px;
+        }
+
+        .info-box {
+            margin-top: 40px;
+            padding-right: 15px;
+        }
+
+        .info {
+            width: 100%;
+            padding: 10px 0 10px 0;
+        }
+
+        .title {
+            font-weight: normal;
+            vertical-align: top;
+            font-size: 17px;
+        }
+
+        .description {
+            vertical-align: top;
+            font-size: 13px;
+        }
+
+        .logo {
+            height: 40px;
+        }
+
+        .seal-logo {
+            height: 100%;
+            float: right;
+        }
+
+        #issue-code {
+            float: right;
+        }
+
+        .comment {
+            font-weight: lighter;
+            font-size: 17px;
+        }
+
+        .history {
+            margin: 10px 0 50px 0;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f5f5f5;
+        }
+
+        td {
+            padding: 10px 5px;
+        }
+
+        table thead tr {
+            height: 20px;
+            background: lightcoral;
+            color: white;
+        }
+
+        #seal {
+            width: 100%;
+            height: 80px;
+            padding-top: 30px;
+        }
+
+    </style>
+</head>
+<body>
+    <img class="logo" src="/static/image/logo2.png" />
+    <div id="issue-code">
+        <span> 발급 번호: </span>
+        <span>ABC-123456789</span>
+    </div>
+    <div class="container main">
+        <h1> 토론 활동 증명서 </h1>
+
+        <div class="info-box">
+            <div class="info">
+                <span class="title"> 이 름 : </span>
+                <span class="description" th:text="${name}"/>
+            </div>
+
+            <div class="info">
+                <span class="title"> 이메일 : </span>
+                <span class="description" th:text="${email}"/>
+            </div>
+
+            <div class="info">
+                <span class="title"> 총 활동 시간 : </span>
+                <span class="description" th:text="${totalTime}"/>
+            </div>
+        </div>
+        <div>
+            <h2 style="margin-top: 50px; margin-bottom: 5px"> 토론 활동 내역 </h2>
+            <div class="history">
+                <table style="width: 100%; text-align: center; font-weight: lighter">
+                    <thead>
+                    <tr class="table100-head" style="font-weight: normal">
+                        <th class="column1">날짜</th>
+                        <th class="column2">토론 ID</th>
+                        <th class="column3">토론 주제</th>
+                        <th class="column4">참여 시간(분)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="history: ${histories}">
+                        <td class="column1" th:text="${history.date}"></td>
+                        <td class="column2" th:text="${history.debateId}"></td>
+                        <td class="column3" th:text="${history.title}"></td>
+                        <td class="column4" th:text="${history.activeTime}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div th:text="${history}"></div>
+            </div>
+        </div>
+        <div>
+            <div class="comment">
+                <span th:text="${name}"/>
+                <span> 님은 아고라에서 온라인 토론 시스템을 통해 위와 같이 토론 활동을 진행하였음을 증명합니다. </span>
+            </div>
+        </div>
+        <div id="seal">
+            <img class="seal-logo" src="/static/image/logo.png" />
+            <div style="float: right; padding: 30px 0 0 0">
+                <div> 온라인 토론 플랫폼 </div>
+                <div style="text-align: right"> 아고라 </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

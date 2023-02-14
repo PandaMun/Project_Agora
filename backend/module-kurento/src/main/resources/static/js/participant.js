@@ -120,7 +120,7 @@ function Participant(name, position, isScreen) {
         var message = {
             id: 'onIceCandidate',
             candidate: candidate,
-            name: name
+            userName: name
         };
         sendMessage(message);
     }

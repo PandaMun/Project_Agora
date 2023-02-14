@@ -8,7 +8,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // Redis
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.7.5'
+    // implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.7.5'
 
     // Swagger
     implementation("io.springfox:springfox-swagger2:3.0.0")
@@ -26,6 +26,9 @@ dependencies {
     //email 인증
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.5.4'
 
-
-
+    // 증명서 발급 관련
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation group: 'org.xhtmlrenderer', name: 'flying-saucer-pdf-openpdf', version: '9.1.22'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+    implementation 'com.itextpdf:html2pdf:3.0.0'
 }

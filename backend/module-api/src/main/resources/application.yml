@@ -6,7 +6,7 @@ spring:
       static-locations: classpath:/dist/
       add-mappings: 'false'
   redis:
-    port: 36379
+    port: 6379
     host: i8c205.p.ssafy.io
   jpa:
     hibernate:
@@ -24,7 +24,7 @@ spring:
     hikari:
       password: ssafy
       username: root
-    url: jdbc:mysql://i8c205.p.ssafy.io:33306/ssafy_web_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
+    url: jdbc:mysql://i8c205.p.ssafy.io:3306/ssafy_web_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
   mail:
     host: smtp.gmail.com
     port: 587
@@ -38,14 +38,17 @@ spring:
             enable: true
           ssl:
             enable: true
+
 jwt:
-  accessTokenExpiration: '1800000'
+  accessTokenExpiration: '18000000000' #'1800000'
   refreshTokenExpiration: '604800000'
   secret: dyAeHubOOc8KaOfYB6XEQoEj1QzRlVgtjNL8PYs1A1tymZvvqkcEU7L1imkKHeDa
+
 springfox:
   documentation:
     swagger:
       use-model-v3: 'false'
+
 server:
   servlet:
     encoding:
@@ -53,14 +56,20 @@ server:
       force: 'true'
       charset: UTF-8
     contextPath: /
-  address: localhost
   port: '8082'
   compression:
     enabled: 'true'
     mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
+
 spa:
   default-file: /dist/index.html
+
 file:
-  path: C:\Users\multicampus\Desktop
+  path: /usr/local/share
+  path-certificate: /usr/local/share
+
+  
 common-code:
   evaluation-question-parent-id : 1
+  category-parent-id : 2
+

@@ -18,24 +18,20 @@ import java.util.List;
 @Setter
 @ApiModel("DebateRegisterPostReq")
 public class DebateRegisterPostReq {
-
-	@ApiModelProperty(name="방장의 고유 ID")
-	long ownerId;
+	@ApiModelProperty(name="방장의 ID")
+	String ownerId;
 
 	@ApiModelProperty(name="토론 카테고리 ID")
 	long category;
-
-	@CreationTimestamp
+	
 	@ApiModelProperty(name="토론 생성시간", example="2022-01-11 13:00:00")
 	LocalDateTime insertedTime;
 
 	@ApiModelProperty(name="토론 시작시간", example="2022-01-11 13:00:00")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	LocalDateTime callStartTime;
+	String callStartTime;
 
 	@ApiModelProperty(name="토론 종료시간", example="2022-01-11 14:00:00")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	LocalDateTime callEndTime;
+	String callEndTime;
 
 	@ApiModelProperty(name="썸네일 URL")
 	String thumbnailUrl;

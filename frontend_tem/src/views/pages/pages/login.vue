@@ -96,8 +96,8 @@ export default {
     const route = useRoute();
     const state = reactive({
       form: {
-        userEmail: '',
-        password: '',
+        userEmail: 'hrlim@naver.com',
+        password: '1q2w3e4r!',
         align: 'left',
         isFormValid: false,
       },
@@ -107,6 +107,7 @@ export default {
       },
       emailHasError: false,
       passwordHasError: false,
+      isLogin: store.getters["userStore/getIsLogin"],
     });
 
     onMounted(() => {
@@ -145,9 +146,9 @@ export default {
       }
     })
 
-    const clickLogin = () => {
+    const clickLogin = async () => {
       console.log(loginForm.value);
-      store.dispatch("userStore/userConfirm", {
+      await store.dispatch("userStore/userConfirm", {
         user_email: state.form.userEmail,
         password: state.form.password
       })

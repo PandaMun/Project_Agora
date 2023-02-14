@@ -46,7 +46,7 @@ ws.onmessage = function (message) {
             break;
         case 'iceCandidate':
             console.log('iceCandidate', parsedMessage)
-            participants[parsedMessage.name].rtcPeer.addIceCandidate(parsedMessage.candidate, function (error) {
+            participants[parsedMessage.userName].rtcPeer.addIceCandidate(parsedMessage.candidate, function (error) {
                 if (error) {
                     console.error("Error adding candidate: " + error);
                     return;
@@ -108,11 +108,13 @@ function register() {
 }
 
 function onNewParticipant(request) {
-    receiveVideo(request.name, request.position, request.isScreen);
+    console.log(request)
+    receiveVideo(request.userName, request.position, request.isScreen);
 }
 
 function receiveVideoResponse(result) {
-    participants[result.name].rtcPeer.processAnswer(result.sdpAnswer, function (error) {
+    console.log(result)
+    participants[result.userName].rtcPeer.processAnswer(result.sdpAnswer, function (error) {
         if (error) return console.error(error);
     });
 }
@@ -167,13 +169,13 @@ function onExistingParticipants(msg) {
                                     }
                                     this.generateOffer(participant.offerToReceiveVideo.bind(participant));
                                 });
-                        msg.data.forEach(m => {receiveVideo(m.name, m.position)});
+                        msg.data.forEach(m => {receiveVideo(m.userName, m.position)});
                     });
             }
         }
 
     } else {
-        console.log(name + " registered in room " + room);
+        console.log(name + " registered in room ");
         var participant = new Participant(name, position, msg.isScreen);
         participants[name] = participant;
         var video = participant.getVideoElement();
@@ -202,7 +204,7 @@ function onExistingParticipants(msg) {
                 });
         }
 
-        msg.data.forEach(m => (receiveVideo(m.name, m.position, m.isScreen)));
+        msg.data.forEach(m => (receiveVideo(m.userName, m.position, m.isScreen)));
     }
 
 }

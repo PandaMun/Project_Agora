@@ -1,7 +1,6 @@
 <template>
     <!-- Main Wrapper -->
     <div class="main-wrapper">
-        
         <layoutsindex></layoutsindex>
             <homebanner></homebanner>
             <featurecourse></featurecourse>

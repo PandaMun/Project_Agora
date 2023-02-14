@@ -21,12 +21,11 @@ const PARTICIPANT_CLASS = 'participant';
 
 var ws ;
 var participants = {};
-var name ;
+var userName ;
 
 function connect() {
-	 ws = new WebSocket('wss://localhost:8443/groupcall');
-	 participants = {};
-	 name = "임하림";
+	ws = new WebSocket('wss://localhost:8443/groupcall');
+	participants = {};
 	ws.onmessage = function (message) {
 		var parsedMessage = JSON.parse(message.data);
 		console.info('Received message: ' + message.data);
@@ -45,7 +44,7 @@ function connect() {
 				receiveVideoResponse(parsedMessage);
 				break;
 			case 'iceCandidate':
-				participants[parsedMessage.name].rtcPeer.addIceCandidate(parsedMessage.candidate, function (error) {
+				participants[parsedMessage.userName].rtcPeer.addIceCandidate(parsedMessage.candidate, function (error) {
 					if (error) {
 						console.error("Error adding candidate: " + error);
 						return;
@@ -58,11 +57,11 @@ function connect() {
 	}
 }
 function onNewParticipant(request) {
-	receiveVideo(request.name);
+	receiveVideo(request.userName);
 }
 
 function receiveVideoResponse(result) {
-	participants[result.name].rtcPeer.processAnswer(result.sdpAnswer, function (error) {
+	participants[result.userName].rtcPeer.processAnswer(result.sdpAnswer, function (error) {
 		if (error) return console.error(error);
 	});
 }
@@ -88,8 +87,8 @@ function receiveVideo(sender) {
 }
 
 function onParticipantLeft(request) {
-	console.log('Participant ' + request.name + ' left');
-	var participant = participants[request.name];
+	console.log('Participant ' + request.userName + ' left');
+	var participant = participants[request.userName];
 	participant.dispose();
 	delete participants[request.name];
 }
@@ -105,9 +104,14 @@ function onExistingParticipants(msg) {
 			}
 		}
 	};
-	console.log(name + " registered in room " + room);
-	var participant = new Participant(name);
-	participants[name] = participant;
+	if (msg.data === null) {
+		console.log('data is null')
+	} else {
+		console.log(userName + " registered in room " + msg.data.title);
+
+	}
+	var participant = new Participant(userName);
+	participants[userName] = participant;
 	var video = participant.getVideoElement();
 
 	var options = {
@@ -127,12 +131,12 @@ function onExistingParticipants(msg) {
 }
 
 class Participant {
-	constructor(name) {
+	constructor(userName) {
 
-		this.name = name;
+		this.userName = userName;
 		var container = document.createElement('div');
 		container.className = isPresentMainParticipant() ? PARTICIPANT_CLASS : PARTICIPANT_MAIN_CLASS;
-		container.id = name;
+		container.id = userName;
 		var span = document.createElement('span');
 		var video = document.createElement('video');
 		var rtcPeer;
@@ -142,9 +146,9 @@ class Participant {
 		container.onclick = switchContainerClass;
 		document.getElementById('participants').appendChild(container);
 
-		span.appendChild(document.createTextNode(name));
+		span.appendChild(document.createTextNode(userName));
 
-		video.id = 'video-' + name;
+		video.id = 'video-' + userName;
 		video.autoplay = true;
 		video.controls = false;
 
@@ -179,7 +183,7 @@ class Participant {
 			console.log('Invoking SDP offer callback function');
 			var message = {
 				id: "receiveVideoFrom",
-				sender: name,
+				sender: userName,
 				sdpOffer: offerSdp
 			};
 			sendMessage(message);
@@ -192,7 +196,7 @@ class Participant {
 			var message = {
 				id: 'onIceCandidate',
 				candidate: candidate,
-				name: name
+				userName: userName
 			};
 			sendMessage(message);
 		}
@@ -200,24 +204,36 @@ class Participant {
 		Object.defineProperty(this, 'rtcPeer', {writable: true});
 
 		this.dispose = function () {
-			console.log('Disposing participant ' + this.name);
+			console.log('Disposing participant ' + this.userName);
 			this.rtcPeer.dispose();
 			container.parentNode.removeChild(container);
 		};
 	}
 }
 
-function registerRoom(name, room) {
-	document.getElementById('room-header').innerText = 'ROOM' + room;
+function registerRoom(data) {
+	document.getElementById('room-header').innerText = 'ROOM' + data.title;
 	document.getElementById('join').style.display = 'none';
 	document.getElementById('room').style.display = 'block';
 
-	let message = {
-		id: 'joinRoom',
-		name: name,
-		room: room,
+	userName = data.userName;
+
+	let creation_message = {
+		id: 'createRoom',
+		debateId: data.debateId,
+		title: data.title,
+		roomType: data.roomType,
+		time: data.time
 	}
-	sendMessage(message);
+	sendMessage(creation_message)
+
+	let join_message = {
+		id: 'joinRoom',
+		debateId: data.debateId,
+		userName : data.userName,
+		position : data.position
+	}
+	sendMessage(join_message);
 }
 
 function callResponse(message) {

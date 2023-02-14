@@ -68,7 +68,7 @@ public class TotalTimeLimitRoom implements Closeable, Room {
     private Collection<String> joinRoom(Participant newParticipant) {
         final JsonObject newParticipantMsg = new JsonObject();
         newParticipantMsg.addProperty("id", "newParticipantArrived");
-        newParticipantMsg.addProperty("name", newParticipant.getName());
+        newParticipantMsg.addProperty("userName", newParticipant.getName());
         newParticipantMsg.addProperty("position", newParticipant.getPosition().getPositionName());
         newParticipantMsg.addProperty("isScreen", newParticipant.isScreen());
 
@@ -95,7 +95,7 @@ public class TotalTimeLimitRoom implements Closeable, Room {
         final List<String> unnotifiedParticipants = new ArrayList<>();
         final JsonObject participantLeftJson = new JsonObject();
         participantLeftJson.addProperty("id", "participantLeft");
-        participantLeftJson.addProperty("name", name);
+        participantLeftJson.addProperty("userName", name);
         for (final Participant participant : participants.values()) {
             try {
                 participant.cancelVideoFrom(name);
@@ -118,7 +118,7 @@ public class TotalTimeLimitRoom implements Closeable, Room {
         for (final Participant participant : this.getParticipants()) {
             if (!participant.equals(user)) {
                 final JsonObject participantInfo = new JsonObject();
-                participantInfo.addProperty("name", participant.getName());
+                participantInfo.addProperty("userName", participant.getName());
                 participantInfo.addProperty("position", participant.getPosition().getPositionName());
                 participantInfo.addProperty("isScreen", participant.isScreen());
 
@@ -217,13 +217,13 @@ public class TotalTimeLimitRoom implements Closeable, Room {
     private void audioOn(Participant user) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", "audioOn");
-        jsonObject.addProperty("name", user.getName());
+        jsonObject.addProperty("userName", user.getName());
     }
 
     private void audioOff(Participant user) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", "audioOff");
-        jsonObject.addProperty("name", user.getName());
+        jsonObject.addProperty("userName", user.getName());
     }
 
     @Override
@@ -234,7 +234,7 @@ public class TotalTimeLimitRoom implements Closeable, Room {
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", "receiveSystemComment");
-        jsonObject.addProperty("name", comment);
+        jsonObject.addProperty("userName", comment);
 
         sendToParticipants(jsonObject);
     }

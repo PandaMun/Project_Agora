@@ -1,14 +1,14 @@
 package com.ssafy.api.response;
 
 import com.ssafy.entity.rdbms.Debate;
-import com.ssafy.entity.rdbms.Faq;
-import com.ssafy.entity.rdbms.File;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -75,7 +75,7 @@ public class DebateRes {
         res.setInsertedTime(debate.getInsertedTime());
         res.setCallStartTime(debate.getCallStartTime());
         res.setCallEndTime(debate.getCallEndTime());
-        res.setThumbnailUrl(debate.getThumbnailUrl());
+        res.setThumbnailUrl(downloadUrlConvertor(debate.getId()));
         res.setTitle(debate.getTitle());
         res.setDescription(debate.getDescription());
         res.setState(debate.getState());
@@ -90,6 +90,14 @@ public class DebateRes {
     public Page<DebateRes> toDtoList(Page<Debate> debates) {
         Page<DebateRes> DebateResList = debates.map(DebateRes::of);
         return DebateResList;
+    }
+
+    private static String downloadUrlConvertor(long debateId) {
+        String downloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/api/v1/files/images/")
+                .path(Long.toString(debateId))
+                .toUriString();
+        return downloadUri;
     }
 
 }

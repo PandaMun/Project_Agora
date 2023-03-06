@@ -42,6 +42,7 @@
 
 <script>
 import { apiInstance } from "../../../api/index.js";
+import VueSimpleAlert from "vue-simple-alert";
 import Vue, {reactive, computed, ref, onMounted, watch} from 'vue';
 import {useRouter, useRoute} from 'vue-router';
 
@@ -56,7 +57,8 @@ export default {
     });
     const sendEmail = () => {
         if (state.userEmail != '') {
-          console.log("sending email");
+          VueSimpleAlert.alert("이메일이 전송되었습니다." +
+              "1분이상 메일이 오지 않는경우 다시 한번 확인해 주세요.")
           api.post('/users/email',
               {
                 userEmail: state.userEmail
@@ -69,8 +71,6 @@ export default {
         }
       }
       const movetoLogin = async () => {
-        alert("이메일이 전송되었습니다." +
-            "30분 내로 변경 가능합니다.")
         await router.push('/login');
       }
     return {state,sendEmail,movetoLogin};

@@ -18,7 +18,7 @@
 									<div class="play-icon">
 										<i class="fa-solid fa-play"></i>
 									</div>
-									<img class="img-fluid" src="../../../../assets/img/video-bg.jpg" alt="">
+									<img class="img-fluid" src="https://i8c205.p.ssafy.io/api/v1/debates/15" alt="">
 								</a>
 							</div>
 							

@@ -8,7 +8,7 @@
           </div>
         </div>
         <div class="modal-body">
-                <img :src="imageUrl" alt="" class="img-fluid">
+                <img :src="'https://i8c205.p.ssafy.io/api/v1/users/images/' + userInfo.userEmail" alt="" class="img-fluid">
 
             </div>
             <div class="profile-group">
@@ -24,61 +24,101 @@
   </div>
 </template>
 
+<!--<script>-->
+<!--import axios from "axios";-->
+<!--import VueSimpleAlert from "vue-simple-alert";-->
+<!--import {useStore} from "vuex";-->
+<!--import {useRouter} from "vue-router";-->
+<!--import {reactive} from "vue";-->
+
+<!--export default {-->
+
+<!--  name: "editProfileImg",-->
+<!--  setup() {-->
+<!--    const store = useStore();-->
+<!--    const userInfo = reactive({-->
+<!--      username: store.getters["userStore/checkUserInfo"].name,-->
+<!--      userEmail: store.getters["userStore/checkUserInfo"].userEmail,-->
+<!--      position: store.getters["userStore/checkUserInfo"].position,-->
+<!--      profile: store.state.userStore.isLogin,-->
+<!--    });-->
+<!--    return {userInfo};-->
+<!--  },-->
+<!--  methods:{-->
+<!--    async uploadImage(event) {-->
+<!--      try {-->
+<!--        const api = axios.create({-->
+<!--          // baseURL: process.env.VUE_APP_API_BASE_URL,-->
+<!--          baseURL: "http://localhost:8082/api/v1",-->
+<!--          // baseURL: "http://i8c205.p.ssafy.io:8082/api/v1",-->
+<!--          headers: {-->
+<!--          }-->
+<!--        });-->
+<!--        api.defaults.headers["authorization"] = "Bearer " +  sessionStorage.getItem("access-token");-->
+<!--        const file = event.target.files[0];-->
+<!--        const formData = new FormData();-->
+<!--        formData.append('file', file);-->
+<!--        const response = await api.patch('/users/profile', formData);-->
+<!--        console.log(response)-->
+<!--        await VueSimpleAlert.alert("변경에 성공하셨습니다.")-->
+<!--        const route = useRouter();-->
+<!--        await route.push("/setting-edit-profile");-->
+<!--      } catch (error) {-->
+<!--        console.error(error)-->
+<!--      }-->
+
+
+<!--    }-->
+<!--  }-->
+
+<!--}-->
+<!--</script>-->
 <script>
-import { apiInstance } from "../../../api/index.js";
-import {findById} from "../../../api/User";
 import axios from "axios";
+import VueSimpleAlert from 'vue-simple-alert';
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { reactive } from "vue";
 
 export default {
-
   name: "editProfileImg",
-  data(){
-    return{
-      imageUrl : ""
-    }
-  },
-  mounted() {
-    findById(data =>{
-      console.log(data)
-          if(data.data.imageUrl != null) {
-            this.imageUrl = data.data.imageUrl;
-            console.log(this.imageUrl)
-          }else if(data.data.imageUrl == null){
-            this.imageUrl = '../../../assets/img/user/female.png';
-          }
-        },
-        data =>{
-          alert("정보를 불러올수 없습니다.")
-        })
-  },
-  methods:{
-    async uploadImage(event) {
+  setup() {
+    const store = useStore();
+    const route = useRouter();
+    const userInfo = reactive({
+      username: store.getters["userStore/checkUserInfo"].name,
+      userEmail: store.getters["userStore/checkUserInfo"].userEmail,
+      position: store.getters["userStore/checkUserInfo"].position,
+      profile: store.state.userStore.isLogin,
+    });
+
+    async function uploadImage(event) {
       try {
         const api = axios.create({
           // baseURL: process.env.VUE_APP_API_BASE_URL,
-          // baseURL: "http://localhost:8082/api/v1",
-          baseURL: "http://i8c205.p.ssafy.io:8082/api/v1",
-          headers: {
-          }
+          baseURL: "https://i8c205.p.ssafy.io/api/v1",
+          headers: {},
         });
 
-        api.defaults.headers["authorization"] = "Bearer " +  sessionStorage.getItem("access-token");
+        api.defaults.headers["authorization"] =
+            "Bearer " + sessionStorage.getItem("access-token");
         const file = event.target.files[0];
         const formData = new FormData();
-        formData.append('file', file);
-        const response = await api.patch('/users/profile', formData);
-        this.form.profilePicture = response.data.imageUrl;
+        formData.append("file", file);
+        const response = await api.patch("/users/profile", formData);
+        console.log(response);
+
+        await VueSimpleAlert.alert("변경에 성공하셨습니다.");
+        await location.reload();
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-
-
     }
-  }
 
-}
+    return { userInfo, uploadImage };
+  },
+};
 </script>
-
 <style scoped>
 
 </style>

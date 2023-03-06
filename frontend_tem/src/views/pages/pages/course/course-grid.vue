@@ -12,7 +12,7 @@
 						
 							<coursefilter></coursefilter>
 							
-							<div class="row">
+							<div class="row" v-if="store.state.debate.howToShow=='grid'">
 								<div class="col-lg-4 col-md-6 d-flex" v-for="(debate, index) in store.state.debate.debateList">
 									<div class="course-box course-design d-flex " >
 										<div class="product">
@@ -21,8 +21,8 @@
 													<img class="img-fluid" alt="" src="../../../../assets/img/course/testImg.jpg">
                                                 </router-link>
 												<div class="price">
-                          <h3 :class="debate.state">{{ debate.state }}</h3>
-                        </div>
+													<h3 :class="debate.state">{{ debate.state }}</h3>
+												</div>
 											</div>
 											<div class="product-content">
 												<div class="course-group d-flex">

@@ -8,7 +8,6 @@
             <shareknowledge></shareknowledge>
             <latestblog></latestblog>
         <layouts1></layouts1>
-       
     </div>
     <!-- /Main Wrapper -->
 </template>

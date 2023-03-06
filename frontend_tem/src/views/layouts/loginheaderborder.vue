@@ -8,9 +8,9 @@
                     <div class="main-menu-wrapper">
                         <menuheader></menuheader>
                         <mainnav></mainnav>		 
-                    </div>		 
-                    
-                   <signpages></signpages>
+                    </div>
+                  <headerpage v-if="data.isLogin"></headerpage>
+                  <signpages v-else ></signpages>
                 </div>
             </nav>
         </div>
@@ -19,10 +19,20 @@
 </template>
 <script>
   import Vue from 'vue'
+  import {useStore} from "vuex";
   export default {
     components: {
         
-    },
+    }
+  ,setup() {
+    const store = useStore();
+    const data = ({
+      // isLogin: store.getters["userStore/getIsLogin"],
+      isLogin: store.state.userStore.isLogin,
+      isValidToken: store.state.userStore.isValidToken,
+    });
+    return {data};
+  },
     mounted() {
    // Content div min height set
 	

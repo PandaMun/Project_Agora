@@ -4,8 +4,7 @@ import axios from "axios";
 export function apiInstance() {
     const instance = axios.create({
         // baseURL: process.env.VUE_APP_API_BASE_URL,
-        // baseURL: "http://localhost:8082/api/v1",
-        baseURL: "http://i8c205.p.ssafy.io:8082/api/v1",
+        baseURL: "https://i8c205.p.ssafy.io/api/v1",
         headers: {
             "Content-Type": "application/json;charset=utf-8",
         },

@@ -8,7 +8,7 @@ server:
     key-store-type: JKS
     key-store: classpath:keystore.jks
     key-alias: kurento-selfsigned
-  port: '8086'
+  port: '8083'
 banner:
   location: classpath:banner.txt
 logging:

@@ -28,10 +28,10 @@ public class DebateModifyPatchReq {
     private String debateMode;
 
     @ApiModelProperty(name="토론 시작 시간")
-    private LocalDateTime callStartTime;
+    private String callStartTime;
 
     @ApiModelProperty(name="토론 종료 시간")
-    private LocalDateTime callEndTime;
+    private String callEndTime;
 
     @ApiModelProperty(name="토론 설정")
     private String debateModeOption;

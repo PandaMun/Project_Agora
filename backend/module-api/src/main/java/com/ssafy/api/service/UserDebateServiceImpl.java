@@ -1,8 +1,11 @@
 package com.ssafy.api.service;
 
+import com.ssafy.api.request.EvaluationBase;
 import com.ssafy.api.request.UserDebateRegisterPostReq;
 import com.ssafy.api.response.DebateRes;
+import com.ssafy.api.response.EvaluatedBase;
 import com.ssafy.api.response.UserDebateHistory;
+import com.ssafy.api.response.UserDebateUsers;
 import com.ssafy.entity.rdbms.Action;
 import com.ssafy.entity.rdbms.Debate;
 import com.ssafy.entity.rdbms.User;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +98,41 @@ public class UserDebateServiceImpl implements UserDebateService {
 
             return userDebateHistory;
 
+    }
+
+    @Override
+    public List<UserDebateUsers> getUserDebateUsersList(long debateId) {
+        List<UserDebate> userDebateList = userDebateRepository.findAllByDebateId(debateId);
+        Map<String, List<EvaluatedBase>> map = new HashMap<>();
+
+        for(UserDebate userDebate : userDebateList){
+            UserDebateUsers userDebateUsers = new UserDebateUsers();
+            String role = userDebate.getRole();
+            EvaluatedBase evaluatedBase = new EvaluatedBase();
+            evaluatedBase.setUserName(userDebate.getUser().getName());
+            evaluatedBase.setUserEmail(userDebate.getUser().getUserEmail());
+            if(map.get(role) == null){
+                List<EvaluatedBase> list = new ArrayList<>();
+                list.add(evaluatedBase);
+                map.put(role, list);
+            } else {
+                List<EvaluatedBase> list = map.get(role);
+                list.add(evaluatedBase);
+            }
+        }
+
+        List<String> keyList = new ArrayList<>(map.keySet());
+        keyList.sort((s1, s2) -> s1.compareTo(s2));
+
+        List<UserDebateUsers> userDebateUsersList = new ArrayList<>();
+        for(String role : keyList){
+            UserDebateUsers userDebateUsers = new UserDebateUsers();
+            userDebateUsers.setRole(role);
+            userDebateUsers.setEvaluatedList(map.get(role));
+            userDebateUsersList.add(userDebateUsers);
+        }
+
+        return userDebateUsersList;
     }
 
 

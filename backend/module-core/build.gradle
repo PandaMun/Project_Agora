@@ -4,10 +4,10 @@ buildscript {
     }
 }
 
-//plugins {
-//    id 'java'
-//    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
-//}
+plugins {
+    id 'java'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+}
 
 jar {
     enabled = true
@@ -44,42 +44,42 @@ dependencies {
 
 }
 
-//// Querydsl 설정부
-//def generated = 'src/main/generated'
-//
-//querydsl {
-//    library = "com.querydsl:querydsl-apt"
-//    jpa = true
-//    querydslSourcesDir = generated
-//}
-//
-//compileQuerydsl{ // querydsl 컴파일시 사용하는 애노테이션프로세서('com.querydsl.apt.jpa.JPAAnnotationProcessor')의 경로를 querydsl 이 지정한 경로를 이용한다는 선언
-//    options.annotationProcessorPath = configurations.querydsl
-//}
-//
-//configurations {
-//    querydsl.extendsFrom compileClasspath
-//}
-//
+// Querydsl 설정부
+def generated = 'src/main/generated'
+
+querydsl {
+    library = "com.querydsl:querydsl-apt"
+    jpa = true
+    querydslSourcesDir = generated
+}
+
+compileQuerydsl{ // querydsl 컴파일시 사용하는 애노테이션프로세서('com.querydsl.apt.jpa.JPAAnnotationProcessor')의 경로를 querydsl 이 지정한 경로를 이용한다는 선언
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', generated]
+        }
+    }
+}
+
+// querydsl QClass 파일 생성 위치를 지정
+tasks.withType(JavaCompile).configureEach {
+    options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+}
+
+// java source set 에 querydsl QClass 위치 추가
 //sourceSets {
-//    main {
-//        java {
-//            srcDirs = ['src/main/java', generated]
-//        }
-//    }
+//    main.java.srcDirs += [ generated ]
 //}
-//
-//// querydsl QClass 파일 생성 위치를 지정
-//tasks.withType(JavaCompile).configureEach {
-//    options.annotationProcessorGeneratedSourcesDirectory = file(generated)
-//}
-//
-//// java source set 에 querydsl QClass 위치 추가
-////sourceSets {
-////    main.java.srcDirs += [ generated ]
-////}
-//
-//// gradle clean 시에 QClass 디렉토리 삭제
-//clean {
-//    delete file(generated)
-//}
+
+// gradle clean 시에 QClass 디렉토리 삭제
+clean {
+    delete file(generated)
+}

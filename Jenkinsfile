@@ -116,6 +116,7 @@ pipeline
 			}
 			steps {
 				echo 'Deploy Start "${APP_KURENTO}"'
+				sh 'docker-compose -f backend/${APP_KURENTO}/docker-compose.yml down'
 				sh 'docker-compose -f backend/${APP_KURENTO}/docker-compose.yml up -d'
 				echo 'Deploy End "${APP_KURENTO}"'
 			}
@@ -129,7 +130,7 @@ pipeline
 				sh '''
 					docker stop front-app
 					docker rm front-app
-					docker run -d -p 80:8083 --name front-app app-vue
+					docker run -d -p 3000:8083 --name front-app app-vue
 				'''
 				echo 'Deploy End Front App'
 			}

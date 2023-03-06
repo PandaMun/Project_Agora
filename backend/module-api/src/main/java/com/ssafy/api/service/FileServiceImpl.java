@@ -10,9 +10,9 @@ import com.ssafy.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,6 +27,8 @@ public class FileServiceImpl implements FileService {
 
     private final FileManagerRepository fileManagerRepository;
 
+
+//  @Value("${file.path-dev}")
     @Value("${file.path}")
     private String filePath;
 
@@ -40,7 +42,7 @@ public class FileServiceImpl implements FileService {
 
         String fileName = UUID.randomUUID().toString();
         String saveFileName = fileName + "_thumbnail";
-        Path path = Paths.get(filePath + java.io.File.separator + fileName);
+        Path path = Paths.get(filePath + java.io.File.separator + saveFileName);
         long size = file.getSize();
 
         File savedFile = saveFile(saveFileName, path, size,ownerEmail, file, fileManager);
@@ -56,7 +58,7 @@ public class FileServiceImpl implements FileService {
     public File saveDebateFile(MultipartFile file, FileManager fileManager, String role, String ownerEmail) throws IOException {
         String fileName = UUID.randomUUID().toString();
         String saveFileName = fileName + "_" + role;
-        Path path = Paths.get(filePath + java.io.File.separator + fileName);
+        Path path = Paths.get(filePath + java.io.File.separator + saveFileName);
         long size = file.getSize();
 
         File savedFile = saveFile(saveFileName, path, size,ownerEmail, file, fileManager);
@@ -64,6 +66,12 @@ public class FileServiceImpl implements FileService {
         fileManager.getFiles().add(savedFile);
         fileManagerRepository.save(fileManager);
         return savedFile;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public File searchById(long fileId) {
+       return fileRepository.findById(fileId).orElseThrow(NoClassDefFoundError::new);
     }
 
     private File saveFile(String saveFileName, Path path, long size, String ownerEmail, MultipartFile file, FileManager fileManager) throws IOException {
@@ -83,6 +91,4 @@ public class FileServiceImpl implements FileService {
 
         return newFile;
     }
-
-
 }

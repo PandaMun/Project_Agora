@@ -4,7 +4,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="addpaymentMethod"> {{ this.debate_title }} 토론 상호평가</h5>
+                <h5 class="modal-title" id="addpaymentMethod"> {{ debate.title }} 토론 상호평가</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-regular fa-circle-xmark"></i></button>
                 </div>
                 <div class="modal-body">
@@ -13,7 +13,7 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div v-if="Object.keys(total_result).length === 0">
-                                        <h4> 현재 유저에 대한 평가 정보가 없습니다. </h4>
+                                        <h4> 토론 "{{debate.title}}"와 현재 유저에 대한 평가 정보가 없습니다. </h4>
                                     </div>
                                     <div class="form-group mb-0" v-else>
                                         
@@ -53,14 +53,16 @@
 </template>
 
 <script>    
-
-import { apiInstance } from "/api/index.js";      
+import { apiInstance } from "/api/index.js";  
+import {useStore} from "vuex";    
 
 const api = apiInstance();
 
 export default {
     setup(){
-
+        const store = useStore();
+        var debate = store.state.debate.debateInfo; // 현재 참여중인 토론. 필요에 따라 편집 사용.
+        return {debate};
     },
     data(){
         return {
@@ -73,7 +75,7 @@ export default {
     },
     mounted(){
         this.getQuetions();
-        this.getTotalResult();
+        this.getTotalResult(this.debate.debateId);
     },
     methods: {
         // 기존 Back API를 그대로 사용하기 위한 quetion-point 매칭 함수. id에 해당하는 점수를 돌려준다.
@@ -96,10 +98,9 @@ export default {
             console.log(error);
         });
         },
-        async getTotalResult(){
-            
+        async getTotalResult(debateId){
             api.defaults.headers["Authorization"] = "Bearer " + sessionStorage.getItem("access-token");
-            api.get('/evaluations')
+            api.get('/evaluations/debates/'+debateId)
             .then((response) => {
                 if(response.status == 200){
                     console.log(response);

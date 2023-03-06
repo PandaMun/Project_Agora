@@ -13,7 +13,7 @@
           <div class="loginbox">
             <div class="w-100">
               <div class="img-logo">
-                <img src="../../../assets/img/logo.svg" class="img-fluid" alt="Logo">
+                <img src="../../../assets/img/Agora2.png" class="img-fluid" alt="Logo">
                 <div class="back-home">
                   <router-link to="/">홈으로</router-link>
                 </div>
@@ -58,17 +58,8 @@
             </div>
           </div>
           <div class="google-bg text-center">
-            <span><a href="javascript:void(0);">Or sign in with</a></span>
-            <div class="sign-google">
-              <ul>
-                <li><a href="javascript:void(0);"><img src="../../../assets/img/net-icon-01.png" class="img-fluid"
-                                                       alt="Logo"> Sign In using Google</a></li>
-                <li><a href="javascript:void(0);"><img src="../../../assets/img/net-icon-02.png" class="img-fluid"
-                                                       alt="Logo">Sign In using Facebook</a></li>
-              </ul>
-            </div>
-            <p class="mb-0">New User ?
-              <router-link to="register">Create an Account</router-link>
+            <p class="mb-0"> 새로 오셨나요?
+              <router-link to="register">여기를 눌러 회원가입을 해보세요!</router-link>
             </p>
           </div>
         </div>
@@ -96,8 +87,8 @@ export default {
     const route = useRoute();
     const state = reactive({
       form: {
-        userEmail: 'hrlim@naver.com',
-        password: '1q2w3e4r!',
+        userEmail: '',
+        password: '',
         align: 'left',
         isFormValid: false,
       },
@@ -152,10 +143,10 @@ export default {
         user_email: state.form.userEmail,
         password: state.form.password
       })
-      moveHome();
+      // await moveHome();
     }
 
-    const moveHome = () => {
+     const moveHome = () => {
       router.push('/');
     }
 

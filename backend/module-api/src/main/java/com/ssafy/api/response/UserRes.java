@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.core.io.UrlResource;
 
 /**
  * 회원 본인 정보 조회 API ([GET] /api/v1/users/me) 요청에 대한 응답값 정의.
@@ -33,7 +34,7 @@ public class UserRes extends BaseResponseBody {
 	String name;
 
 	@ApiModelProperty(name="User 프로필 Url")
-	String profileUrl;
+	UrlResource profileUrl;
 
 
 	public static UserRes of(User user) {

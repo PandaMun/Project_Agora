@@ -12,7 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ * @author 김종근
+ * @since 2023.02.16 12:22
  */
 
 package com.ssafy;

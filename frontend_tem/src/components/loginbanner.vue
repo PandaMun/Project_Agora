@@ -9,8 +9,9 @@
             <Carousel>
                 <Slide v-for="slide in 3" :key="slide">
                     <div class="mentor-course text-center">
-                        <h2>Welcome to <br>DreamsLMS Courses.</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+                        <h2>Welcome to Agora! </h2>
+                        <p> 온라인 토론 플랫폼 아고라에 어서오세요!<br/>
+                            다양한 주제를 바탕으로 많은 사람들과 이야기를 나눌 수 있습니다. </p>
                     </div>
                 </Slide>
                 <template #addons>

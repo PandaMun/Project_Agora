@@ -37,6 +37,9 @@ public class FileRes {
     @ApiModelProperty(name = "파일 배포자")
     private String userEmail;
 
+    @ApiModelProperty(name = "파일 삭제 여부")
+    private boolean deleted;
+
     public static FileRes of(File file) {
         FileRes res = new FileRes();
         res.setFileId(file.getId());
@@ -47,6 +50,7 @@ public class FileRes {
         res.setSize(file.getSize());
         res.setExtension(file.getExtension());
         res.setUserEmail(file.getUserEmail());
+        res.setDeleted(file.isDeleted());
         return res;
     }
 

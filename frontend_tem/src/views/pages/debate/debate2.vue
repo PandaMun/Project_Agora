@@ -1,13 +1,29 @@
 <template>
+<!--  <button @click="start" value="start">스타트</button>-->
+<!--  <button @click="stop" value="stop">스탑</button>-->
   <div>
     <div id="room">
-      <h2 id="room-header"></h2>
+      <div style="height: 8vh;"></div>
+      <!--      <h2 id="room-header">{{info.title}}</h2>-->
+      <div style="padding: 15px;">
+        <div class="title-wrapper">
+          <img src="../../../assets/img/Agora3.png"/>
+          <h2 class="title">토론 주제</h2>
+          <div class="debate-title">{{ data.title }}</div>
+        </div>
+      </div>
+      <div class="box_1" style="color: purple;">
+        <div id="timer-찬성" style="margin-left: 300px;">{{addZeros(parseInt(parseInt(data.time) / 60), 2) + ':' + addZeros(data.time % 60, 2)}}</div>
+        <div id="timer-반대" style="margin-right: 300px;">{{addZeros(parseInt(parseInt(data.time) / 60), 2) + ':' + addZeros(data.time % 60, 2)}}</div>
+      </div>
+        <div style="height: 5vh; margin-bottom: 15px;"></div>
       <div
-          :class="[middle_box ? 'participant-box' : 'participant-box_2']"
+          :class="[middle_box ? 'participant-box_2' : 'participant-box_2']"
           id="participants">
         <div id="participants-agree"
              :class="[middle_box ? 'A_box' : 'A_box_2']"></div>
-        <div id="moderator"></div>
+        <div id="moderator"
+             class=moderator></div>
         <div id="participants-opp"
              :class="[middle_box ? 'B_box' : 'B_box_2']"></div>
       </div>
@@ -43,13 +59,14 @@
 <script>
 import {mapState, useStore} from "vuex";
 import kurentoUtils from "kurento-utils";
-import {onMounted, reactive} from "vue";
+import {onMounted, reactive, watch} from "vue";
 import Participant from "../../../assets/js/participant.js";
 
 export default {
   name: 'debate2',
   components: {},
   computed: {
+    ...mapState('debate', {info: 'participantInfo'}),
     ...mapState('debate', {middle_box: 'middle_box'})
   },
   props: {
@@ -57,19 +74,25 @@ export default {
   },
   setup(props) {
     const store = useStore();
+    console.log('보고타', store)
     const data = reactive({
-      ws: store.getters["debate/getWebRtcSocket"],
+      ws: store.state.debate.webRtcSocket,
       participants: {},
       name: '',
       title: '',
-      position: ''
+      position: '',
+      time: '00:00',
     })
     onMounted(() => {
       connect();
+      console.log('============= ws 테스트 ==============')
+      console.log(data.ws);
+      store.commit('debate/SET_WEB_SOCKET', data.ws);
     })
 
     const makeWebsocket = () => {
-      data.ws = new WebSocket('wss://localhost:8086/groupcall');
+      data.ws = new WebSocket('wss://i8c205.p.ssafy.io:8083/groupcall');
+
       data.ws.onopen = () => {
         console.log('WebSocket connection established');
         register()
@@ -86,10 +109,9 @@ export default {
       data.ws.onmessage = (message) => {
         let parsedMessage = JSON.parse(message.data);
         console.info('Received message: ' + message.data);
-
         switch (parsedMessage.id) {
           case 'existingParticipants':
-            onExistingParticipants(parsedMessage)
+            onExistingParticipants(parsedMessage);
             break;
           case 'newParticipantArrived':
             onNewParticipant(parsedMessage);
@@ -114,11 +136,21 @@ export default {
             break;
           case 'timeRemaining':
             let time = parsedMessage.time;
-            document.getElementById('timer').innerText = parseInt(time / 60) + ':' + time % 60
-            break
-          case 'pauseSpeaking':
+            if (parsedMessage.position === '찬성') {
+              document.getElementById('timer-' + '찬성').innerText = addZeros(parseInt(time / 60), 2) + ':' + addZeros(time % 60, 2)
+            }
+            else if (parsedMessage.position === '반대'){
+              document.getElementById('timer-' + '반대').innerText = addZeros(parseInt(time / 60), 2) + ':' + addZeros(time % 60, 2)
+          }
+            break;
+          case 'pauseSpeaking':``
             time = parsedMessage.time;
-            document.getElementById('timer').innerText = parseInt(time / 60) + ':' + time % 60
+            if (parsedMessage.position === '찬성') {
+              document.getElementById('timer-' + '찬성').innerText = addZeros(parseInt(time / 60), 2) + ':' + addZeros(time % 60, 2)
+            }
+            else if (parsedMessage.position === '반대'){
+              document.getElementById('timer-' + '반대').innerText = addZeros(parseInt(time / 60), 2) + ':' + addZeros(time % 60, 2)
+            }
             break
           case 'receiveSystemComment':
             alert(parsedMessage.comment)
@@ -134,6 +166,17 @@ export default {
       console.log('connect done')
     }
 
+    const addZeros = (num, digit) => { // 자릿수 맞춰주기
+      let zero = '';
+      num = num.toString();
+      if (num.length < digit) {
+        for (let i = 0; i < digit - num.length; i++) {
+          zero += '0';
+        }
+      }
+      return zero + num;
+    }
+
     const register = () => {
       console.log('register')
       data.name = props.call.name;
@@ -141,14 +184,14 @@ export default {
       let debateId = props.call.debateId;
       data.position = props.call.position;
       let roomType = props.call.roomType;
-      let time = props.call.time;
+      data.time = props.call.time;
 
       sendMessage({
         id: 'createRoom',
         debateId: debateId,
         title: data.title,
         roomType: roomType,
-        time: time
+        time: data.time
       })
 
       let message = {
@@ -159,6 +202,12 @@ export default {
         position: data.position,
       }
       sendMessage(message);
+      console.log(store.state.debate.participant)
+      console.log(data.name)
+      if (store.state.debate.participant_list === undefined) {
+        store.state.debate.participant_list = new Set();
+      }
+      store.state.debate.participant_list.add(data.name)
     }
 
     const onIceCandidate = (candidate) => {
@@ -172,12 +221,13 @@ export default {
 
     const onNewParticipant = (request) => {
       console.log('리퀘스트', request)
+      store.state.debate.participant_list.add(request.userName)
       receiveVideo(request.userName, request.position, request.isScreen);
     }
 
     const onExistingParticipants = (msg) => {
       let constraints = {
-        audio: true,
+        audio: false,
         video: {
           mandatory: {
             maxWidth: 320,
@@ -190,6 +240,8 @@ export default {
       console.log(data.name + " registered in room " + data.title);
       let participant = new Participant(data.name, data.position, msg.isScreen);
       data.participants[data.name] = participant;
+      participant.constraints = constraints;
+
       let video = participant.getVideoElement();
 
       participant.onIceCandidate = (candidate) => {
@@ -208,6 +260,11 @@ export default {
       }
 
       data.participants[data.name].rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function (error) {
+        console.log('이젠여기', options)
+        store.commit("debate/participantRegister", data.participants)
+        store.commit("debate/Register", data.name)
+        console.log('이젠여기3', store.state.debate.participant)
+
         if (error) {
           return console.error(error);
         }
@@ -221,8 +278,12 @@ export default {
         });
       });
 
-      msg.data.forEach(m => (receiveVideo(m.userName, m.position, m.isScreen)));
+      msg.data.forEach(m => {
+        receiveVideo(m.userName, m.position, m.isScreen)
+        store.state.debate.participant_list.add(m.userName)
+      });
     }
+
 
     const receiveVideoResponse = (result) => {
       console.log(data.participants);
@@ -232,16 +293,23 @@ export default {
     }
 
     const start = () => {
-      let debateId = document.getElementById('debateId').value;
+      let debateId = store.state.debate.participantInfo.debateId
+      let time = store.state.debate.participantInfo.time
 
+      console.log({
+        id: 'startSpeaking',
+        debateId: debateId,
+        time: time
+      });
       sendMessage({
         id: 'startSpeaking',
-        debateId: debateId
+        debateId: debateId,
+        time: time
       });
     }
 
     const stop = () => {
-      let debateId = document.getElementById('debateId').value;
+      let debateId = store.state.debate.participantInfo.debateId
 
       sendMessage({
         id: 'pauseSpeaking',
@@ -266,6 +334,7 @@ export default {
         }
       }
       delete data.participants[data.name];
+      store.state.debate.participant_list.delete(data.name)
       document.getElementById("video-" + name).parentElement.remove();
 
       var message = {
@@ -324,9 +393,6 @@ export default {
         data.participants[key].dispose();
       }
 
-      document.getElementById('join').style.display = 'block';
-      document.getElementById('room').style.display = 'none';
-
       data.ws.close();
     }
     const receiveVideo = (name, position, isScreen) => {
@@ -335,6 +401,7 @@ export default {
       var participant = new Participant(name, position, isScreen);
       data.participants[name] = participant;
       var video = participant.getVideoElement();
+
 
       participant.onIceCandidate = (candidate) => {
         let message = {
@@ -376,13 +443,13 @@ export default {
     //     });
     //   }
     // }
-
     const onParticipantLeft = (request) => {
-      console.log('Participant ' + request.name + ' left');
-      var participant = data.participants[request.name];
+      console.log('Participant ' + request.userName + ' left');
+      var participant = data.participants[request.userName];
+      document.getElementById('video-' + request.userName).remove();
       participant.dispose();
-      document.getElementById('video-' + request.name).remove();
-      delete data.participants[request.name];
+      delete data.participants[request.userName];
+      store.state.debate.participant_list.delete(request.userName)
     }
     const sendMessage = (message) => {
       console.log(data.ws)
@@ -392,29 +459,29 @@ export default {
       data.ws.send(jsonMessage);
       console.log(data.ws)
     }
-    const videoOnOff = () => {
-      if (data.participants[name].rtcPeer.videoEnabled) {
-        // 끌때
-        data.participants[name].rtcPeer.videoEnabled = false;
-        document.getElementById("vidOn").style.display = "";
-        document.getElementById("vidOff").style.display = "none";
-      } else {
-        data.participants[name].rtcPeer.videoEnabled = true;
-        document.getElementById("vidOn").style.display = "none";
-        document.getElementById("vidOff").style.display = "";
-      }
-    }
-    const audioOnOff = () => {
-      if (data.participants[name].rtcPeer.audioEnabled) {
-        data.participants[name].rtcPeer.audioEnabled = false;
-        document.getElementById("audOn").style.display = "";
-        document.getElementById("audOff").style.display = "none";
-      } else {
-        data.participants[name].rtcPeer.audioEnabled = true;
-        document.getElementById("audOn").style.display = "none";
-        document.getElementById("audOff").style.display = "";
-      }
-    }
+    // const videoOnOff = () => {
+    //   if (data.participants[data.name].rtcPeer.videoEnabled) {
+    //     // 끌때
+    //     data.participants[name].rtcPeer.videoEnabled = false;
+    //     document.getElementById("vidOn").style.display = "";
+    //     document.getElementById("vidOff").style.display = "none";
+    //   } else {
+    //     data.participants[name].rtcPeer.videoEnabled = true;
+    //     document.getElementById("vidOn").style.display = "none";
+    //     document.getElementById("vidOff").style.display = "";
+    //   }
+    // }
+    // const audioOnOff = () => {
+    //   if (data.participants[name].rtcPeer.audioEnabled) {
+    //     data.participants[name].rtcPeer.audioEnabled = false;
+    //     document.getElementById("audOn").style.display = "";
+    //     document.getElementById("audOff").style.display = "none";
+    //   } else {
+    //     data.participants[name].rtcPeer.audioEnabled = true;
+    //     document.getElementById("audOn").style.display = "none";
+    //     document.getElementById("audOff").style.display = "";
+    //   }
+    // }
     const sendSystemComment = () => {
       let debateId = document.getElementById('debateId').value;
 
@@ -433,12 +500,11 @@ export default {
       })
     }
 
-    return {store, data}
+    return {store, data, start, stop, connect, addZeros, leaveRoom}
   }
 }
 
 </script>
-
 
 <style scoped>
 .participant-box {
@@ -454,14 +520,14 @@ export default {
   width: 90vw;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  /*align-items: center;*/
   justify-content: center;
   margin: auto;
 }
 
 .A_box {
-  height: 20vh;
-  width: 40vw;
+  height: 249px;
+  width: 329px;
   display: flex;
   flex-direction: row;
   border: orangered solid 5px;
@@ -488,8 +554,9 @@ export default {
 }
 
 .B_box {
-  height: 20vh;
-  width: 40vw;
+  height: 249px;
+  width: 329px;
+
   display: flex;
   flex-direction: row;
   border: navy solid 5px;
@@ -509,6 +576,82 @@ export default {
     display: none;
 
   }
+}
+
+.btn {
+  color: red;
+  background-color: red;
+}
+
+.moderator {
+  height: 249px;
+  width: 330px;
+  border: purple 5px solid;
+}
+
+#timer {
+  color: red;
+}
+
+#room-header {
+  text-align: center;
+  color: blueviolet;
+}
+
+.debate-title {
+  font-size: 30px;
+  padding: 10px;
+  font-family: 'KIMM_Bold';
+}
+
+.title-wrapper {
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.6); /* 배경색상 */
+  padding: 10px; /* 제목 주위 여백 */
+  text-align: center;
+
+}
+
+
+.title-wrapper img {
+  display: inline-block;
+  width: 30px;
+
+}
+
+.title-wrapper .title {
+  display: inline-block;
+  font-size: 20px;
+  /*color: #FF4667;*/
+  color: #392C7D;
+}
+
+.title {
+  text-align: center; /* 제목 가운데 정렬 */
+}
+
+.box_1 {
+  height: 3vh;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-family: "LABD";
+  font-size: 50px;
+}
+
+@font-face {
+  font-family: 'KIMM_Bold';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2212@1.0/KIMM_Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "LABD";
+  src:url("../../../assets/fonts/LABD.woff") format("woff");
+  font-weight: normal;;
+  font-style: normal;
 }
 
 </style>

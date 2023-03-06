@@ -10,10 +10,6 @@ function findById(success, fail) {
     api.defaults.headers["authorization"] = "Bearer " + sessionStorage.getItem("access-token");
     api.get(`/users/me`).then(success).catch(fail);
 }
-// function changeUserInfo(success, fail) {
-//     api.defaults.headers["authorization"] = "Bearer " + sessionStorage.getItem("access-token");
-//     api.patch(`/users/info`).then(success).catch(fail);
-// }
 
 function tokenRegeneration(success, fail) {
     const jwt = {

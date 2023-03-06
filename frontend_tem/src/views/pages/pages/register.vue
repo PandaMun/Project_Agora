@@ -12,12 +12,12 @@
         <div class="login-wrapper">
           <div class="loginbox">
             <div class="img-logo">
-              <img src="../../../assets/img/logo.svg" class="img-fluid" alt="Logo">
+                <img src="../../../assets/img/Agora2.png" class="img-fluid" alt="Logo">
               <div class="back-home">
-                <router-link to="/">Back to Home</router-link>
+                <router-link to="/">홈으로</router-link>
               </div>
             </div>
-            <h1>Sign up</h1>
+            <h1> 회원가입 </h1>
             <form ref="SignupForm" :model="state.form" :rules="state.rules" :label-position="state.form.align">
               <div class="form-group">
                 <label class="form-control-label">E-mail 아이디</label>
@@ -86,17 +86,8 @@
             </div>
 
             <div class="google-bg text-center">
-              <span><a href="javascript:void(0);">Or sign in with</a></span>
-              <div class="sign-google">
-                <ul>
-                  <li><a href="javascript:void(0);"><img src="../../../assets/img/net-icon-01.png" class="img-fluid"
-                                                         alt="Logo"> Sign In using Google</a></li>
-                  <li><a href="javascript:void(0);"><img src="../../../assets/img/net-icon-02.png" class="img-fluid"
-                                                         alt="Logo">Sign In using Facebook</a></li>
-                </ul>
-              </div>
-              <p class="mb-0">Already have an account?
-                <router-link to="login">Sign in</router-link>
+              <p class="mb-0"> 이미 계정이 있으신가요?
+                <router-link to="login"> 로그인하기 </router-link>
               </p>
             </div>
           </div>
@@ -114,6 +105,7 @@ import  Vue, { reactive, computed, ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import http from '../../../api/http';
 import {useRouter, useRoute} from 'vue-router';
+import {apiInstance} from "../../../api";
 
 export default {
   name: "register",
@@ -121,6 +113,7 @@ export default {
   props : {},
   setup(props) {
     const store = useStore();
+    const api = apiInstance();
     const SignupForm = ref(null);
     const router = useRouter();
     const state = reactive({

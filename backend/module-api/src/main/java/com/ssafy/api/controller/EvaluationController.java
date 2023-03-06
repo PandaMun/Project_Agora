@@ -12,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import okhttp3.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -54,13 +55,26 @@ public class EvaluationController {
     }
 
     @GetMapping("")
-    @ApiOperation(value="토론 상호 평가 조회", notes="")
+    @ApiOperation(value="로그인 유저의 전체 토론 상호 평가 조회", notes="")
     public ResponseEntity<?> getEvaluations(@ApiIgnore Authentication authentication) {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String userId = userDetails.getUsername();
 
         List<Evaluation> evaluationList = evaluationService.getEvaluationList(userId);
+        if(evaluationList.isEmpty())
+            return ResponseEntity.status(204).body(BaseResponseBody.of(204, "Success"));
+
+        return ResponseEntity.status(200).body(EvaluationRes.of(evaluationList, userId));
+    }
+
+    @GetMapping("/debates/{debateId}")
+    @ApiOperation(value="특정 토론의 상호 평가 결과 조회", notes="")
+    public ResponseEntity<?> getEvaluationsByDebateId(@ApiIgnore Authentication authentication, @PathVariable Long debateId){
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUsername();
+
+        List<Evaluation> evaluationList = evaluationService.getEvaluationListByDebateId(userId, debateId);
         if(evaluationList.isEmpty())
             return ResponseEntity.status(204).body(BaseResponseBody.of(204, "Success"));
 

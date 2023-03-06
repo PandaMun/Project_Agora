@@ -15,7 +15,7 @@ export default {
 .middle-box {
     width: 100%;
     height: 100%;
-    background-color: indianred;
+    /*background-color: indianred;*/
     padding: 10px;
 
 }

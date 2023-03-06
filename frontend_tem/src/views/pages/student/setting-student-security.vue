@@ -49,28 +49,28 @@
 											<div class="col-lg-6">
 												<form action="#">
 													<div class="form-group">
-<!--														<label class="form-control-label">현재 비밀번호</label>-->
-														<input type="password" class="form-control" placeholder="현재 비밀번호">
+														<label class="form-control-label">현재 비밀번호</label>
+														<input type="password" v-model="password" class="form-control" placeholder="현재 비밀번호">
 													</div>
 													<div class="form-group">
-<!--														<label class="form-control-label">새 비밀번호</label>-->
+														<label class="form-control-label">새 비밀번호</label>
 														<div class="pass-group" id="passwordInput">
-															<input type="password" class="form-control pass-input" placeholder="새 비밀번호">
+															<input type="password" v-model="new_password" class="form-control pass-input" placeholder="새 비밀번호">
 														</div>
-<!--														<div  class="password-strength" id="passwordStrength">-->
-<!--															<span id="poor"></span>-->
-<!--															<span id="weak"></span>-->
-<!--															<span id="strong"></span>-->
-<!--															<span id="heavy"></span>-->
-<!--														</div>-->
+														<div  class="password-strength" id="passwordStrength">
+															<span id="poor"></span>
+															<span id="weak"></span>
+															<span id="strong"></span>
+															<span id="heavy"></span>
+														</div>
 														<div id="passwordInfo"></div>
 													</div>
 													<div class="form-group">
-<!--														<label class="form-control-label">새 비밀번호 확인</label>-->
-														<input type="password" class="form-control" placeholder="새 비밀번호 확인" >
+														<label class="form-control-label">새 비밀번호 확인</label>
+														<input type="password" class="form-control" v-model="new_password_check" placeholder="새 비밀번호 확인" >
 													</div>
 													<div class="update-profile save-password">
-														<button type="button" class="btn btn-primary">비밀번호 변경</button>
+														<button type="button" class="btn btn-primary" @click="changePassword">비밀번호 변경</button>
 													</div>
 												</form>
 											</div>
@@ -93,15 +93,44 @@
 </template>
 <script>
     import Vue from 'vue'
+    import {apiInstance} from "../../../api";
+    import VueSimpleAlert from "vue-simple-alert";
+
     export default {
       components: {
         
       },
       data() {
             return {
-              
+              password : '',
+              new_password : '',
+              new_password_check : '',
             }
         },
+
+      methods: {
+        changePassword() {
+          if (this.new_password == this.new_password_check) {
+
+          const api = apiInstance();
+          api.defaults.headers.common['Authorization'] = 'Bearer ' + sessionStorage.getItem('access-token');
+          api.patch('/users/password', {
+            newPassword: this.new_password,
+            nowPassword: this.password
+          }).then(res => {
+            VueSimpleAlert.alert("비밀번호가 변경되었습니다.")
+          }).catch(error => {
+            if (error.response.status == 409) {
+              VueSimpleAlert.alert("다시 한번 확인해주세요.");
+            }
+          })
+
+        }else{
+            VueSimpleAlert.alert("재 설정할 비밀번호가 일치하지 않습니다.");
+          }
+
+      }
+      },
         mounted() {
 		 
             if($('#passwordInput').length > 0) {

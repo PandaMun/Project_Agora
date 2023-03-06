@@ -19,4 +19,5 @@ public interface UserDebateRepository extends JpaRepository<UserDebate, Long> {
     Page<UserDebate> findAllByUserIdOrderByPage(@Param(value = "userId") Long userId, Pageable pageable);
 
 
+    List<UserDebate> findAllByDebateId(long debateId);
 }

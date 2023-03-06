@@ -67,6 +67,11 @@ spa:
 file:
   path: /usr/local/share
   path-certificate: /usr/local/share
+  default-thumbnail-path : /usr/local/share/Agora.png
+#  path: C:\Users\multicampus\Desktop
+#  path-certificate: C:\Users\multicampus\Desktop\ssafy\Agora_Debate\backend\module-api\src\main\resources
+#  default-thumbnail-path: C:\Users\multicampus\Desktop\agora.png
+
 
   
 common-code:

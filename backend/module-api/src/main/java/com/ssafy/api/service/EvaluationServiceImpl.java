@@ -60,4 +60,10 @@ public class EvaluationServiceImpl implements EvaluationService {
         Long evaluatedId = userRepository.findByUserEmail(userId).orElseThrow().getId();
         return Optional.ofNullable(evaluationRepository.findByEvaluatedId(evaluatedId)).orElse(Collections.emptyList());
     }
+
+    @Override
+    public List<Evaluation> getEvaluationListByDebateId(String userId, Long debateId) {
+        Long evaluatedId = userRepository.findByUserEmail(userId).orElseThrow().getId();
+        return Optional.ofNullable(evaluationRepository.findByEvaluatedIdAndDebateId(evaluatedId, debateId)).orElse(Collections.emptyList());
+    }
 }

@@ -3,7 +3,6 @@ import { apiInstance } from "./index.js";
 const api = apiInstance();
 
 async function searchAll(search, success, fail) {
-    console.log(search);
     await api.get(`/debates?keyword=${search.keyword}&condition=${search.condition}&categoryList=${search.categoryList}&page=${search.page}`).then(success).catch(fail);
 }
 

@@ -8,7 +8,6 @@
     <h5>n명 중 m명 참가 대기중입니다</h5>
     <router-link to="/debatemain">
       <button>참가완</button>
-
     </router-link>
   </div>
 </template>

@@ -1,10 +1,11 @@
 <template>
   <div
       class="side-box"
-      v-if="participant_list === true ||chat_box === true">
-    <div class="box1" v-if="middle_box === true"></div>
-    <div :class="[ middle_box === true ? 'side-el' : 'side-el-full' ]">
-     <participant_list v-if="participant_list === true"></participant_list>
+      v-if="participant_list_btn === true ||chat_box === true">
+<!--    <div class="box1" v-if="middle_box === true"></div>-->
+<!--    <div :class="[ middle_box === true ? 'side-el-full' : 'side-el' ]">-->
+    <div class="'side-el-full'">
+     <participant_list v-if="participant_list_btn === true"></participant_list>
      <chat v-show="chat_box === true"></chat>
     </div>
     <div class="box2" v-if="middle_box === true"></div>
@@ -32,12 +33,12 @@ export default {
   },
   computed : {
     ...mapState('debate',{middle_box:'middle_box'}),
-    ...mapState('debate',{participant_list:'participant_list'}),
+    ...mapState('debate',{participant_list_btn:'participant_list_btn'}),
     ...mapState('debate',{chat_box:'chat_box'}),
   },
   created() {
-    // const serverURL = "http://localhost:8082/my-chat"
-    const serverURL = "http://i8c205.p.ssafy.io:8084/my-chat/"
+    // const serverURL = "https://i8c205.p.ssafy.io:8084/my-chat/"
+    const serverURL = "https://i8c205.p.ssafy.io/my-chat/"
     this.chatSocket = new SockJS(serverURL);
     this.stompClient = Stomp.over(this.chatSocket);
     this.store.state.debate.chatSocket = this.chatSocket

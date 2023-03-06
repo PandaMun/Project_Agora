@@ -5,14 +5,12 @@
         <div class="col-lg-6">
           <div class="d-flex align-items-center">
             <div class="view-icons">
-              <router-link :class="currentPath == 'course-grid' ? 'active' : 'notactive'" to="course-grid"
-                           class="grid-view"><i class="feather-grid"></i></router-link>
-              <router-link :class="currentPath == 'course-list' ? 'active' : 'notactive'" to="course-list"
-                           class="list-view"><i class="feather-list"></i></router-link>
+              <a class="noactive grid-view" @click="setHowToShow('grid')" id="grid"><i class="feather-grid"></i></a>
+              <a class="active list-view" @click="setHowToShow('list')" id="list"><i class="feather-list"></i></a>
             </div>
             <div class="show-result">
               <h4 v-if = "store.state.debate.totalElements == 0">Showing 0 - 0 of 0 results </h4>
-              <h4 v-else >Showing  {{store.state.debate.offset + 1}} - {{ store.state.debate.offset + 1 + store.state.debate.numberOfElements}} of {{ store.state.debate.totalElements }} results</h4>
+              <h4 v-else >Showing  {{store.state.debate.offset + 1}} - {{ store.state.debate.offset + store.state.debate.numberOfElements}} of {{ store.state.debate.totalElements }} results</h4>
             </div>
           </div>
         </div>
@@ -49,7 +47,7 @@
     <!-- /Filter -->
   </template>
   <script>
-  import {onMounted, reactive} from 'vue'
+  import {onMounted, reactive, onUpdated} from 'vue'
   import {useStore} from "vuex";
   
   export default {
@@ -65,9 +63,12 @@
         pageNumber : store.state.debate.pageNumber, 
         numberOfElements : store.state.debate.numberOfElements,
       })
-      onMounted(() => {
-        loadDebateList();
-      })
+      // onMounted(() => {
+      //   loadDebateList();
+      // })
+      onUpdated(() => {
+        setHowToShow(store.state.debate.howToShow);
+      });
 
       const loadDebateList = async () => {
         store.commit('debate/SET_KEYWORD', data.keyword);
@@ -75,7 +76,20 @@
         await store.dispatch("debate/searchDebateList", {})
       }
 
-      return {data, loadDebateList, store};
+      const setHowToShow = (howToShow) => {
+        document.getElementById('grid').className = "noactive grid-view";
+        document.getElementById('list').className = "noactive list-view";
+
+        if(howToShow == 'grid'){
+          document.getElementById('grid').className = "active grid-view";
+        }
+        else
+          document.getElementById('list').className = "active list-view";
+        
+        store.commit('debate/SET_HOW_TO_SHOW', howToShow);
+      }
+
+      return {data, loadDebateList, store, setHowToShow};
     },
   
     computed: {

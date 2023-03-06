@@ -49,6 +49,7 @@ function Participant(name, position, isScreen) {
     console.log(this.position)
     if (this.position === '반대') {
         document.getElementById('participants-opp').appendChild(container);
+
     } else if (this.position === '찬성') {
         document.getElementById('participants-agree').appendChild(container);
     } else if (this.position === '사회자') {
@@ -56,6 +57,9 @@ function Participant(name, position, isScreen) {
     }
 
     container.appendChild(video);
+
+
+
 
     if (isScreen) {
         let alternated = document.createElement('div');

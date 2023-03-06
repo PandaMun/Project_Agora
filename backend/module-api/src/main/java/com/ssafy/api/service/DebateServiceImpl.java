@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -80,8 +81,8 @@ public class DebateServiceImpl implements DebateService {
         debate.setCategory(debateModifyReq.getCategory());
         debate.setModeratorOnOff(debateModifyReq.getModeratorOnOff());
         debate.setDebateMode(debateModifyReq.getDebateMode());
-        debate.setCallStartTime(debateModifyReq.getCallStartTime());
-        debate.setCallEndTime(debateModifyReq.getCallEndTime());
+        debate.setCallStartTime(dateConverter(debateModifyReq.getCallStartTime()));
+        debate.setCallEndTime(dateConverter(debateModifyReq.getCallEndTime()));
         debate.setDebateModeOption(debateModifyReq.getDebateModeOption());
         debateRepository.save(debate);
     }
@@ -94,7 +95,6 @@ public class DebateServiceImpl implements DebateService {
     }
 
     private Debate makeDebate(DebateRegisterPostReq debateRegisterPostReq, User owner) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         Debate debate = new Debate();
         debate.setOwner(owner);
         debate.setCategory(debateRegisterPostReq.getCategory());
@@ -105,8 +105,8 @@ public class DebateServiceImpl implements DebateService {
         debate.setThumbnailUrl(debateRegisterPostReq.getThumbnailUrl());
         debate.setState(debateRegisterPostReq.getState());
         debate.setInsertedTime(debateRegisterPostReq.getInsertedTime());
-        debate.setCallStartTime(LocalDateTime.parse(debateRegisterPostReq.getCallStartTime(), formatter));
-        debate.setCallEndTime(LocalDateTime.parse(debateRegisterPostReq.getCallEndTime(), formatter));
+        debate.setCallStartTime(dateConverter(debateRegisterPostReq.getCallStartTime()));
+        debate.setCallEndTime(dateConverter(debateRegisterPostReq.getCallEndTime()));
         debate.setDebateModeOption(debateRegisterPostReq.getDebateModeOption());
         return debate;
     }
@@ -115,5 +115,11 @@ public class DebateServiceImpl implements DebateService {
     public void deleteDebate(Long id) {
         Debate debate = debateRepository.findById(id).orElseThrow(NoSuchElementException::new);
         debateRepository.delete(debate);
+    }
+
+    private LocalDateTime dateConverter(String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        LocalDateTime newDate = LocalDateTime.parse(date, formatter);
+        return newDate;
     }
 }

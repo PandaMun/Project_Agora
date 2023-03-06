@@ -23,8 +23,8 @@ var ws ;
 var participants = {};
 var userName ;
 
-function connect() {
-	ws = new WebSocket('wss://localhost:8443/groupcall');
+function connect() {//8443
+	ws = new WebSocket('wss://i8c205.p.ssafy.io/groupcall');
 	participants = {};
 	ws.onmessage = function (message) {
 		var parsedMessage = JSON.parse(message.data);

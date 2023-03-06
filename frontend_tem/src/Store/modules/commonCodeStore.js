@@ -22,15 +22,7 @@ const commonCodeStore = {
     },
     actions: {
         getCategories({commit}) {
-            // getCommonCodes().then((data) => {
-            //     let categories = data["data"]
-            //     commit("SET_CATEGORIES", categories);
-            //     sessionStorage.setItem("categories", categories);
-            //     return categories;
-            // }).catch((error) => {
-            //     alert("error");
-            // })
-            axios.defaults.baseURL = "http://i8c205.p.ssafy.io:8082/api/v1";
+            axios.defaults.baseURL = "https://i8c205.p.ssafy.io/api/v1";
             axios.get(`codes/category`)
                 .then((data) => {
                     let result = data["data"];

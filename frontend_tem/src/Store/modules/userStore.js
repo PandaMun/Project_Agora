@@ -14,6 +14,7 @@ const userStore = {
             name : "김임시",
             position : "임시고등학교"
         },
+        userProfile : "",
         isValidToken: false,
     },
     getters: {
@@ -54,7 +55,8 @@ const userStore = {
                         commit("SET_IS_VALID_TOKEN", true);
                         sessionStorage.setItem("access-token", accessToken);
                         sessionStorage.setItem("refresh-token", refreshToken);
-                        await findById(({data}) => {
+                        await findById(async ({data}) => {
+                            console.log(data)
                             let userInfo = {
                                 userEmail: data.userEmail,
                                 name: data.name,
@@ -62,18 +64,18 @@ const userStore = {
                                 position: data.position,
                                 grade: data.grade,
                                 classNum: data.classNum,
-                                profile: data.profileUrl
                             }
+                            // await findImg(async ({data}) => {
+                            //     commit("SET_USER_PROFILE", data);
+                            // })
+
                             if (data.message === "Success") {
                                 commit("SET_USER_INFO", userInfo);
+                                await router.push('/');
                                 // console.log("3. getUserInfo data >> ", data);
                             } else {
                                 console.log("유저 정보 없음!!!!");
                             }
-                        }, async (error) => {
-                            console.log("getUserInfo() error code [토큰 만료되어 사용 불가능.] ::: ", error.response.status);
-                            commit("SET_IS_VALID_TOKEN", false);
-                            await dispatch("tokenRegeneration");
                         });
                     } else {
                         commit("SET_IS_LOGIN", false);
@@ -82,7 +84,7 @@ const userStore = {
                     }
                 },
                 (error) => {
-                    if(error.response.status==500){
+                    if(error.response.status==401){
                         alert("존재하지 않은 아이디 입니다.")
                     }
                 }
@@ -101,7 +103,7 @@ const userStore = {
                 await dispatch("tokenRegeneration");
             });
         },
-        async tokenRegeneration({commit, state}) {
+        async tokenRegeneration({commit}) {
             console.log("토큰 재발급 >> 기존 토큰 정보 : {}", sessionStorage.getItem("access-token"));
             await tokenRegeneration(
                 ({data}) => {
@@ -149,6 +151,8 @@ const userStore = {
                         commit("SET_IS_LOGIN", false);
                         commit("SET_USER_INFO", null);
                         commit("SET_IS_VALID_TOKEN", false);
+                        sessionStorage.removeItem("access-token");
+                        sessionStorage.removeItem("refresh-token");
                     } else {
                         console.log("유저 정보 없음!!!!");
                     }

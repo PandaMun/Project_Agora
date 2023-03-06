@@ -53,12 +53,13 @@
                   </div>
                   <div class="form-group">
                     <label class="form-label">사회자 여부</label>
-                    <div>
-                      <input type="radio" name="select_specialist" v-model="state.debate.moderateOnOff" value="true">
-                      <span class="checkmark"></span> 사회자 참여
-                      <input type="radio" name="select_specialist" v-model="state.debate.moderateOnOff" value="false">
-                      <span class="checkmark"></span> 사회자 불참
-                    </div>
+                    <select class="form-control" v-model="state.debate.moderateOnOff" name="sellist3">
+                      <option value="">Choose Option</option>
+                      <option v-for="(item, index) in state.option.moderateOnOff"
+                              :key="index"
+                              :value="item.value">{{ item.name }}
+                      </option>
+                    </select>
                   </div>
                   <div class="form-group">
                     <label for="start-time">토론 시작 시간</label>
@@ -75,12 +76,12 @@
                   <div class="form-group">
                     <label for="thumbnail">토론 썸네일</label>
                     <div>
-                      <input type="file" id="thumbnail" class="btn btn-outline-dark">
+                      <input type="file" @change="uploadImg" id="thumbnail" class="btn btn-outline-dark">
                     </div>
                   </div>
                 </div>
                 <div class="submit-ticket">
-                  <button type="button" class="btn btn-primary" @click.prevent="saveDebateConfig">생성</button>
+                  <button type="button" class="btn btn-primary" @click.prevent="modifyDebateConfig">수정</button>
                 </div>
               </div>
             </div>
@@ -108,7 +109,7 @@ export default {
     api.defaults.headers["authorization"] = "Bearer " + sessionStorage.getItem("access-token");
     const state = reactive({
       debate: {
-        id : '',
+        id: '',
         title: '',
         description: '',
         category: '',
@@ -121,10 +122,11 @@ export default {
       option: {
         categories: null,
         modes: ['CEDA', '시간총량제'],
+        moderateOnOff: [{name: "참여", value: true}, {name: "불참", value: false}],
       },
     });
 
-    onMounted( () => {
+    onMounted(() => {
       state.debate.id = store.getters["debate/getDebateId"];
       console.log(state.debate.id);
     })
@@ -143,10 +145,17 @@ export default {
     })
 
     onMounted(() => {
+      console.log(state.debate.id);
       api.get(`/debates/` + state.debate.id)
           .then((data) => {
-            let result = data.data;
-            console.log(result);
+            let result = data["data"].data;
+            state.debate.title = result.title;
+            state.debate.description = result.description;
+            state.debate.category = result.category;
+            state.debate.mode = result.debateMode;
+            state.debate.moderateOnOff = result.moderatorOnOff;
+            state.debate.callEndTime = new Date(result.callEndTime).toISOString().substring(0, 16);
+            state.debate.callStartTime = new Date(result.callStartTime).toISOString().substring(0, 16);
           })
           .catch((error) => {
             console.log(error);
@@ -154,39 +163,40 @@ export default {
           })
     })
 
-    const uploadImg = async (event) => {
+    const uploadImg = (event) => {
       const file = event.target.files[0];
       const formData = new FormData();
       formData.append('file', file);
-      const response = await api.post('/debates/thumbnail/', formData);
-    }
-
-    const saveDebateConfig = () => {
-      const file = document.getElementById("thumbnail");
-      const formData = new FormData();
-      formData.append("ownerId", store.getters["userStore/checkUserInfo"].userEmail);
-      formData.append("category", state.debate.category);
-      formData.append("callStartTime", state.debate.callStartTime);
-      formData.append("callEndTime", state.debate.callEndTime);
-      formData.append("title", state.debate.title);
-      formData.append("description", state.debate.description);
-      formData.append("state", "비활성화");
-      formData.append("debateMode", state.debate.mode);
-      formData.append("moderatorOnOff", state.debate.moderateOnOff);
-      formData.append("perspectiveNames", state.debate.perspectiveNames);
-      formData.append("file", file.files[0]);
-      api.post(`/debates`, formData, {
+      api.patch('/files/thumbnail/' + state.debate.id, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
-      }).then(data => {
-        router.push("/")
-      }).catch((error) => {
+      }).then(() => {
+        alert("썸네일 수정 완료");
+      }).catch(() => {
+        alert("썸네일 수정 실패");
+      })
+    }
+
+    const modifyDebateConfig = () => {
+      const req = {
+        title: state.debate.title,
+        description: state.debate.description,
+        category: state.debate.category,
+        moderatorOnOff: state.debate.moderateOnOff,
+        debateMode: state.debate.mode,
+        callStartTime: state.debate.callStartTime,
+        callEndTime: state.debate.callEndTime,
+      }
+      api.patch(`/debates/` + state.debate.id, req)
+          .then(() => {
+            router.push("/")
+          }).catch((error) => {
         console.log(error)
       })
     }
 
-    return {state, saveDebateConfig, uploadImg}
+    return {state, modifyDebateConfig, uploadImg}
   },
   // methods: {
   //   // saveDebateConfig() {

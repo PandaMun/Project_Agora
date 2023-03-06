@@ -188,6 +188,8 @@ public class TotalTimeLimitRoom implements Closeable, Room {
                     jsonObject.addProperty("id", "timeRemaining");
                     jsonObject.addProperty("position", positionName);
                     jsonObject.addProperty("time", time--);
+                    positions.get(positionName).updateLastSecond(time);
+                    log.info("타이머 {} {}", positionName, time);
 
                     sendToParticipants(jsonObject);
                 } else {
@@ -206,6 +208,7 @@ public class TotalTimeLimitRoom implements Closeable, Room {
 
         this.timer.cancel();
         this.audioOff(user);
+        log.info("타이머 스탑 {}", positions.get(positionName).getLastSeconds());
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", "pauseSpeaking");

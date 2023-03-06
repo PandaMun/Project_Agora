@@ -25,10 +25,10 @@ export default {
 <style scoped>
 .document-box {
   bottom: 100px;
-  width: 300px;
+  width: 600px;
   height: 400px;
   display: flex;
-  left: 36.5%;
+  left: 29.5%;
   position: absolute;
   background: black;
   color: whitesmoke;

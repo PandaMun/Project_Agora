@@ -3,11 +3,13 @@ package com.ssafy.api.service;
 import com.ssafy.api.request.UserDebateRegisterPostReq;
 import com.ssafy.api.response.DebateRes;
 import com.ssafy.api.response.UserDebateHistory;
+import com.ssafy.api.response.UserDebateUsers;
 import com.ssafy.entity.rdbms.User;
 import com.ssafy.entity.rdbms.UserDebate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Map;
 
 public interface UserDebateService {
@@ -20,4 +22,5 @@ public interface UserDebateService {
 
     Page<UserDebateHistory> getUserDebatePage(User user, Pageable pageable);
 
+    List<UserDebateUsers> getUserDebateUsersList(long debateId);
 }

@@ -13,4 +13,6 @@ public interface EvaluationService {
     void deleteEvaluation(Long evaluationId);
 
     List<Evaluation> getEvaluationList(String userId);
+
+    List<Evaluation> getEvaluationListByDebateId(String userId, Long debateId);
 }

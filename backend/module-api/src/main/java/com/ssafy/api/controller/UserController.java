@@ -1,13 +1,18 @@
 package com.ssafy.api.controller;
 
 import com.ssafy.api.request.*;
+import com.ssafy.api.response.DebateRes;
+import com.ssafy.api.response.FileRes;
 import com.ssafy.api.service.FileService;
 import com.ssafy.api.service.MailService;
 import com.ssafy.api.service.UserFileManagerService;
 import com.ssafy.common.model.response.BaseResponseBody;
+import com.ssafy.entity.rdbms.File;
 import com.ssafy.entity.rdbms.FileManager;
 import com.ssafy.entity.rdbms.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,7 +32,12 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 /**
  * 유저 관련 API 요청 처리를 위한 컨트롤러 정의.
@@ -86,9 +96,6 @@ public class UserController {
 		String userId = userDetails.getUsername();
 		User user = userService.getUserByUserEmail(userId);
 		UserRes userRes = new UserRes().of(user);
-		if(user.getFileManager() != null) {
-			userRes.setProfileUrl((userFileManagerService.getProfileUrl(user.getFileManager())).getSavedPath());
-		}
 		System.out.println(userRes.getProfileUrl());
 		return ResponseEntity.status(200).body(userRes);
 	}
@@ -250,6 +257,20 @@ public ResponseEntity<BaseResponseBody> checkEmail(@RequestBody UserEmailReq use
 	}
 
 
+
+	@GetMapping("/images/{userEmail}")
+	@ApiOperation(value = "이미지 파일")
+	public Resource showImage(@PathVariable String userEmail) throws IOException {
+		File profileUrl = null;
+		try {
+			FileManager fileManager = userFileManagerService.getFileManager(userEmail);
+			profileUrl = userFileManagerService.getProfileUrl(fileManager);
+			Path normalize = Paths.get(profileUrl.getSavedPath()).toAbsolutePath().normalize();
+		} catch (NullPointerException e) {
+			return null;
+		}
+		return new UrlResource("file:" + Paths.get(profileUrl.getSavedPath()).toAbsolutePath().normalize());
+	}
 
 
 }
